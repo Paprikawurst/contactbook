@@ -49,7 +49,7 @@ namespace Contactbook
             string cityNamePart = InputChecker.CsvEmptyInputCheck(parts[2]);
             long.TryParse(parts[3], out long a);   
             long phoneNumberPart = a;
-            string mailAdressPart = InputChecker.CsvMailFormatCheck(parts[4]);
+            string mailAddressPart = InputChecker.CsvMailFormatCheck(parts[4]);
             string genderPart = InputChecker.CsvGenderCheck(parts[5]);
 
             if (phoneNumberPart != 0 && genderPart != "wronginput" && namePart != "wronginput" && addressPart != "wronginput" && cityNamePart != "wronginput")
@@ -88,7 +88,7 @@ namespace Contactbook
                     Name = namePart,
                     LocationID = (int)LocationID,
                     PhoneNumber = phoneNumberPart,
-                    MailAddress = mailAdressPart,
+                    MailAddress = mailAddressPart,
                     Gender = genderPart
                 };
 

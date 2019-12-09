@@ -5,7 +5,7 @@ namespace Contactbook
     public static class InputChecker
     {
 
-        //ADRESS CHECK
+        //ADDRESS CHECK
         public static string NoEmptyInputCheck()
         {
             var input = "";
@@ -27,22 +27,22 @@ namespace Contactbook
         //MAILFORMAT CHECK
         public static string MailFormatCheck()
         {
-            var mailAdress = "";
-            bool mailAdressIsMailAdress = false;
+            var mailAddress = "";
+            bool mailAddressIsMailAddress = false;
 
-            while (!mailAdressIsMailAdress)
+            while (!mailAddressIsMailAddress)
             {
                 var input = Console.ReadLine();
                 if (input.Contains("@") && input.Contains(".") && (input.IndexOf("@") > 0) && (input.IndexOf("@") < input.IndexOf("."))
                     && input.IndexOf(".") > input.IndexOf("@") + 1 && (input.Length - 1 > input.IndexOf("."))) // Format muss a@b.c sein
                 {
-                    mailAdressIsMailAdress = true;
-                    mailAdress = input;
+                    mailAddressIsMailAddress = true;
+                    mailAddress = input;
                 }
                 else
                     Console.WriteLine("\nWARNING: Wrong Format. Correct Example: a@b.c\n");
             }
-            return mailAdress;
+            return mailAddress;
         }
 
         //PHONENUMBERCHECK
@@ -117,23 +117,23 @@ namespace Contactbook
         //CSVMAILFORMAT CHECK
         public static string CsvMailFormatCheck(string input)
         {
-            var mailAdress = "";
-            bool mailAdressIsMailAdress = false;
-            while (!mailAdressIsMailAdress)
+            var mailAddress = "";
+            bool mailAddressIsMailAddress = false;
+            while (!mailAddressIsMailAddress)
             {
                 if (input.Contains("@") && input.Contains(".") && (input.IndexOf("@") > 0) && (input.IndexOf("@") < input.IndexOf("."))
                   && input.IndexOf(".") > input.IndexOf("@") + 1 && (input.Length - 1 > input.IndexOf("."))) // Format muss a@b.c sein
                 {
-                    mailAdressIsMailAdress = true;
-                    mailAdress = input;
+                    mailAddressIsMailAddress = true;
+                    mailAddress = input;
                 }
                 else
                 {
-                    mailAdress = "";
-                    mailAdressIsMailAdress = true;
+                    mailAddress = "";
+                    mailAddressIsMailAddress = true;
                 }
             }
-            return mailAdress;
+            return mailAddress;
         }
     }
 }
