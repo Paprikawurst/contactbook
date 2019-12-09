@@ -8,7 +8,7 @@ namespace Contactbook
 {
     public class CsvReader
     {
-        public List<ContactData.Contact> ImportEntriesFromCsvIntoList(ContactBook contactbook, string csvFileName)
+        public void ImportEntriesFromCsvIntoList(ContactBook contactbook, string csvFileName, SQLConnection sql)
         {
             int csvLoop = 1;
             var csvFilePath = $@"C:\Users\nwolff\Desktop\Projekte\dotnet\{csvFileName}.csv";
@@ -21,171 +21,137 @@ namespace Contactbook
                 while ((csvLine = sr.ReadLine()) != null)
                 {
                     ++csvLoop;
-                    var a = csvLine.Split(';');
+                    var a = csvLine.Split(';'); // turns csvLine into SplitStringArray
                     a = a.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
                     //CSV CONTACT
                     if (a.Length == 6)
                     {
-                        ContactData.Contact contact = ReadContactFromCsvLine(csvLine);
-                        bool invalidMailAdress = contact.MailAdress.Equals("");
-                        bool invalidPhoneNumber = contact.PhoneNumber.Equals(0);
-                        bool locIsDuplicate = InputChecker.LocationDuplicateCheck(contactbook.locationsList, contact.Location.Adress, contact.Location.City);
-                        bool conIsDuplicate = InputChecker.ContactDuplicateCheck(contactbook.contactsList, contact);
-                        var y = 0;
-                        var x = 0;
-
-                        if (locIsDuplicate)
-                        {
-                            Console.WriteLine($"\nINFO: Location on line {csvLoop} is duplicate and will not be added.\n");
-
-                        }
-                        else if (!locIsDuplicate)
-                            contactbook.locationsList.Add(contact.Location);
-
-
-                        foreach (var l in contactbook.locationsList)
-                        {
-                            if (contact.Location.Adress == l.Adress && contact.Location.City.CityName == l.City.CityName)
-                            {
-                                l.HasContact = true;
-                            }
-                        }
-
-                        if (conIsDuplicate)
-                        {
-                            Console.WriteLine($"\nINFO: Contact on line {csvLoop} is duplicate and will not be added.\n");
-                        }
-                        else if (!conIsDuplicate && !locIsDuplicate && !invalidPhoneNumber && !invalidMailAdress)
-                        {
-                            contactbook.contactsList.Add(contact);
-                        }
-                        else if (!conIsDuplicate && locIsDuplicate && !invalidPhoneNumber && !invalidMailAdress)
-                        {
-                            contactbook.contactsList.Add(contact);
-                            Console.WriteLine($"\nINFO: {contact.Location.Adress}, {contact.Location.City.CityName} is now assigned to {contact.ContactName}.\n");
-                        }
-                        else if (invalidPhoneNumber && !invalidMailAdress)
-                        {
-                            Console.WriteLine($"\nINFO: Contact on line {csvLoop} has an invalid phonenumber and will not be added.\n");
-                        }
-                        else if (!invalidPhoneNumber && invalidMailAdress)
-                        {
-                            Console.WriteLine($"\nINFO: Contact on line {csvLoop} has an invalid mailadress and will not be added.\n");
-                        }
-                        else if (invalidPhoneNumber && invalidMailAdress)
-                        {
-                            Console.WriteLine($"\nINFO: Contact on line {csvLoop} has an invalid phonenumber and an invalid mailadress and will not be added.\n");
-                        }
-
-                        foreach (var i in contactbook.contactsList)
-                        {
-                            i.ContactIndexNumber = y++;
-                        }
-
-                        foreach (var i in contactbook.locationsList)
-                        {
-                            i.LocationIndexNumber = x++;
-                        }
+                        ReadAndAddContactFromCsvLine(csvLine, sql);
                     }
 
                     //CSV LOCATION
                     else if (a.Length == 2)
                     {
-                        Location location = ReadLocationFromCsvFile(csvLine);
-
-                        bool IsDuplicate = InputChecker.LocationDuplicateCheck(contactbook.locationsList, location.Adress, location.City);
-
-                        if (IsDuplicate)
-                        {
-                            Console.WriteLine($"\nINFO: Location on line {csvLoop} is duplicate and will not be added.\n");
-                        }
-                        else if (!IsDuplicate)
-                        {
-                            contactbook.locationsList.Add(location);
-                        }
-
-                        var y = 0;
-                        foreach (var i in contactbook.locationsList)
-                            i.LocationIndexNumber = y++;
+                        ReadAndAddLocationFromCsvFile(csvLine, sql);
                     }
                     else
                         Console.WriteLine($"WARNING: Invalid Entry on line  {csvLoop} : {csvLine}");
                 }
             }
-            Console.WriteLine("\nINFO: Index have been renewed.");
-            return contactbook.contactsList;
         }
 
-        public ContactData.Contact ReadContactFromCsvLine(string csvLine)
+        public void ReadAndAddContactFromCsvLine(string csvLine, SQLConnection sql)
         {
             string[] parts = csvLine.Split(';');
-            string namePart = parts[0];
-            string adressPart = parts[1];
-            string cityNamePart = parts[2];
-            long.TryParse(parts[3], out long phoneNumberPart);
+            string namePart = InputChecker.CsvEmptyInputCheck(parts[0]);
+            string addressPart = InputChecker.CsvEmptyInputCheck(parts[1]);
+            string cityNamePart = InputChecker.CsvEmptyInputCheck(parts[2]);
+            long.TryParse(parts[3], out long a);   
+            long phoneNumberPart = a;
             string mailAdressPart = InputChecker.CsvMailFormatCheck(parts[4]);
-            string genderPart = parts[5];
-            int indexNumber = 0;
+            string genderPart = InputChecker.CsvGenderCheck(parts[5]);
 
-            Location location = ConstructLocation(indexNumber, adressPart, cityNamePart);
-
-            if (genderPart == "male")
+            if (phoneNumberPart != 0 && genderPart != "wronginput" && namePart != "wronginput" && addressPart != "wronginput" && cityNamePart != "wronginput")
             {
-                var man = new Man
+                Location location = new Location()
                 {
-                    ContactIndexNumber = indexNumber,
-                    ContactName = namePart,
-                    Location = location,
-                    PhoneNumber = phoneNumberPart,
-                    MailAdress = mailAdressPart
+                    Address = addressPart,
+                    CityName = cityNamePart,
                 };
 
-                return man;
-            }
+                List<Location> locationslist = sql.OutputLocationTableToList();
+                var locIsDupe = false;
+                var CommandText = "";
 
+                foreach (var loc1 in locationslist)
+                {
+                    if ((location.Address == loc1.Address) && (location.CityName == loc1.CityName))
+                        locIsDupe = true;
+                }
+
+                if (!locIsDupe)
+                {
+                    CommandText = $"INSERT INTO locations(Address, CityName) VALUES ('{location.Address}', '{location.CityName}')";
+                    sql.ExecuteNonQuery(CommandText);
+                }
+                else
+                {
+                    Console.WriteLine("\nINFO: Location is duplicate and will not be added!\n");
+                }
+
+                long LocationID = sql.GetLocationID(location);
+
+
+                var contact = new Contact
+                {
+                    Name = namePart,
+                    LocationID = (int)LocationID,
+                    PhoneNumber = phoneNumberPart,
+                    MailAddress = mailAdressPart,
+                    Gender = genderPart
+                };
+
+                List<Contact> contactslist = sql.OutputContactTableToList();
+                var conIsDupe = false;
+
+                foreach (var con1 in contactslist)
+                {
+                    if ((contact.Name == con1.Name) && (contact.LocationID == con1.LocationID) && (contact.PhoneNumber == con1.PhoneNumber) && (contact.MailAddress == con1.MailAddress) && (contact.Gender == con1.Gender))
+                        conIsDupe = true;
+                }
+
+                if (!conIsDupe)
+                {
+                    CommandText = $"INSERT INTO contacts(Name, LocationID, PhoneNumber, MailAddress, Gender) VALUES('{contact.Name}', '{contact.LocationID}', '{contact.PhoneNumber}', '{contact.MailAddress}', '{contact.Gender}');";
+                    sql.ExecuteNonQuery(CommandText);
+                }
+                else
+                    Console.WriteLine($"\nINFO: Contact on {csvLine} is duplicate and will not be added!\n");
+            }
             else
-            {
-                var woman = new Woman
-                {
-                    ContactIndexNumber = indexNumber,
-                    ContactName = namePart,
-                    Location = location,
-                    PhoneNumber = phoneNumberPart,
-                    MailAdress = mailAdressPart
-                };
+                Console.WriteLine($"Wrong input on line: {csvLine}");
 
-                return woman;
-            }
         }
 
-        public Location ReadLocationFromCsvFile(string csvLine)
+        public void ReadAndAddLocationFromCsvFile(string csvLine, SQLConnection sql)
         {
             string[] parts = csvLine.Split(';');
             parts = parts.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-            int indexNumber = 0;
-            string adressPart = parts[0];
-            string cityNamePart = parts[1];
+            string addressPart = InputChecker.CsvEmptyInputCheck(parts[0]);
+            string cityNamePart = InputChecker.CsvEmptyInputCheck(parts[1]);
 
-            Location location = ConstructLocation(indexNumber, adressPart, cityNamePart);
-            return location;
-        }
-
-        public Location ConstructLocation(int indexNumber, string adress, string cityName)
-        {
-            City city = new City
+            if (addressPart != "wronginput" && cityNamePart != "wronginput")
             {
-                CityName = cityName,
-            };
+                Location location = new Location()
+                {
+                    Address = addressPart,
+                    CityName = cityNamePart,
+                };
 
-            Location location = new Location
-            {
-                LocationIndexNumber = indexNumber,
-                Adress = adress,
-                City = city,
-                HasContact = false,
-            };
-            return location;
+
+                List<Location> locationslist = sql.OutputLocationTableToList();
+                var locIsDupe = false;
+                var CommandText = "";
+
+                foreach (var loc1 in locationslist)
+                {
+                    if ((location.Address == loc1.Address) && (location.CityName == loc1.CityName))
+                        locIsDupe = true;
+                }
+
+                if (!locIsDupe)
+                {
+                    CommandText = $"INSERT INTO locations(Address, CityName) VALUES ('{location.Address}', '{location.CityName}')";
+                    sql.ExecuteNonQuery(CommandText);
+                }
+                else
+                {
+                    Console.WriteLine("\nINFO: Location is duplicate and will not be added!\n");
+                }
+            }
+            else
+                Console.WriteLine($"\nWARNING: Wrong input on line: {csvLine}\n");
         }
     }
 }

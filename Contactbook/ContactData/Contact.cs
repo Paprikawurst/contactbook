@@ -1,21 +1,14 @@
 ﻿namespace ContactData
 {
-    public abstract class Contact
+    public class Contact
     {
-        public int ContactIndexNumber
+        public string Name
         {
             get;
             set;
         }
 
-        public string ContactName
-        {
-            get;
-            set;
-
-        }
-
-        public Location Location
+        public int LocationID
         {
             get;
             set;
@@ -26,15 +19,16 @@
             set;
         }
 
-        public string MailAdress
+        public string MailAddress
         {
             get;
             set;
         }
 
-        public abstract string Gender
+        public string Gender
         {
             get;
-        }              
+            set;
+        }
     }
 }

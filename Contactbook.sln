@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28307.852
+VisualStudioVersion = 15.0.28307.902
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contactbook", "Contactbook\Contactbook.csproj", "{375A017C-EE76-4EFD-9D86-D420F73E5F6D}"
 EndProject
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {997AD2B1-7EF3-430A-A568-1A561823FBDE}
+		SolutionGuid = {39AD611F-38E7-4EB7-9647-F066E0384078}
 	EndGlobalSection
 EndGlobal

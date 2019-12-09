@@ -2,23 +2,18 @@
 {
     public class Location
     {
-        public int LocationIndexNumber
-        {
-            get;
-            set;
-        }
-        public string Adress
-        {
-            get;
-            set;
-        }
-        public City City
+        public int LocationID
         {
             get;
             set;
         }
 
-        public bool HasContact
+        public string Address
+        {
+            get;
+            set;
+        }
+        public string CityName
         {
             get;
             set;

@@ -6,242 +6,271 @@ namespace Contactbook
 {
     public class ContactBook
     {
-        public List<ContactData.Location> locationsList = new List<ContactData.Location>();
-        public List<ContactData.Contact> contactsList = new List<ContactData.Contact>();
-
         //----------------------------------------ADD CONTACT-----------------------------------------------------
-        public void AddContact(int contactIndexNumber, string name, ContactData.Location location, long phoneNumber, string mailAdress, string gender)
+        public void AddContact(ContactBook contactbook, SQLConnection sql, long countLocations)
         {
+            Console.WriteLine("\nPlease enter the Name of the new Contact.");
+            var name = InputChecker.NoEmptyInputCheck();
 
-            foreach (var l in locationsList)
-                if (location.Adress == l.Adress && location.City.CityName == l.City.CityName)
-                    l.HasContact = true;
+            Location location = AddOrGetLocation(contactbook, sql, countLocations);
 
-            switch (gender)
+            long LocationID = sql.GetLocationID(location);
+
+            Console.WriteLine("\nPlease enter the phone number for the new Contact");
+            long phoneNumber = InputChecker.PhoneNumberCheck();
+
+            Console.WriteLine("\nPlease enter a mail adress for the new Contact");
+            var mailAddress = InputChecker.MailFormatCheck();
+
+            Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
+            var gender = InputChecker.GenderCheck();
+
+            Contact contact = new Contact
             {
-                case "male":
-                    var man = new ContactData.Man          // man oder contact?
-                    {
-                        ContactIndexNumber = contactIndexNumber,
-                        ContactName = name,
-                        Location = location,
-                        PhoneNumber = phoneNumber,
-                        MailAdress = mailAdress
-                    };
+                Name = name,
+                LocationID = (int)LocationID,
+                PhoneNumber = phoneNumber,
+                MailAddress = mailAddress,
+                Gender = gender
+            };
+            List<Contact> contactslist = sql.OutputContactTableToList();
+            var conIsDupe = false;
 
-                    bool ConIsDuplicate = InputChecker.ContactDuplicateCheck(contactsList, man);
-                    if (ConIsDuplicate)
-                    {
-                        Console.WriteLine("\nINFO: Contact is duplicate and will not be added.\n");
-                    }
-                    else if (!ConIsDuplicate)
-                    {
-                        contactsList.Add(man);
-                        Console.WriteLine($"\nINFO: {man.ContactName} successfully added to the contactbook.\n");
-                    }
-                    break;
-
-                case "female":
-                    var woman = new ContactData.Woman           // woman oder contact?
-                    {
-                        ContactIndexNumber = contactIndexNumber,
-                        ContactName = name,
-                        Location = location,
-                        PhoneNumber = phoneNumber,
-                        MailAdress = mailAdress
-                    };
-
-                    ConIsDuplicate = InputChecker.ContactDuplicateCheck(contactsList, woman);
-                    if (ConIsDuplicate)
-                    {
-                        Console.WriteLine("\nINFO: Contact is duplicate and will not be added.\n");
-                    }
-                    else if (!ConIsDuplicate)
-                    {
-                        contactsList.Add(woman);
-                        Console.WriteLine($"\nINFO: {woman.ContactName} successfully added to the contactbook.\n");
-                    }
-                    break;
-
-                default:
-                    break;
-
+            foreach (var con1 in contactslist)
+            {
+                if ((contact.Name == con1.Name) && (contact.LocationID == con1.LocationID) && (contact.PhoneNumber == con1.PhoneNumber) && (contact.MailAddress == con1.MailAddress) && (contact.Gender == con1.Gender))
+                    conIsDupe = true;
             }
+
+            if (!conIsDupe)
+            {
+                var CommandText = $"INSERT INTO contacts(Name, LocationID, PhoneNumber, MailAddress, Gender) VALUES('{contact.Name}', '{LocationID}', '{contact.PhoneNumber}', '{contact.MailAddress}', '{contact.Gender}');";
+                sql.ExecuteNonQuery(CommandText);
+
+                Console.WriteLine("\nINFO: Contact successfully added!\n");
+            }
+            else
+                Console.WriteLine("\nINFO: Contact is duplicate and will not be added!\n");
         }
 
-
-        //------------------------------------GET OR ADD LOCATION-----------------------------------------------------------------------
-        public Location GetOrAddLocation(int locationIndexNumber, string adress, string cityName)
+        //---------------------------------------ADD OR GET LOCATION-----------------------------------------------------------------------
+        public Location AddOrGetLocation(ContactBook contactbook, SQLConnection sql, long countLocations)
         {
-            Location location;
+            Console.WriteLine("\nPlease enter the address of the new contact.");
+            var address = InputChecker.NoEmptyInputCheck();
 
-            City city = new City()
+            Console.WriteLine("\nPlease enter the cityname of the new contact");
+            var cityName = InputChecker.NoEmptyInputCheck();
+
+            Location location = new Location()
             {
-                CityName = cityName
+                Address = address,
+                CityName = cityName,
             };
 
-            foreach (var l in locationsList)
+            List<Location> locationslist = sql.OutputLocationTableToList();
+            var locIsDupe = false;
+            var CommandText = "";
+
+            foreach (var loc1 in locationslist)
             {
-                if (adress == l.Adress && city.CityName == l.City.CityName)
-                {
-                    Console.WriteLine("\nINFO: Location is duplicate and will not be added.\n");
-                    return l;
-                }
+                if ((location.Address == loc1.Address) && (location.CityName == loc1.CityName))
+                    locIsDupe = true;
             }
 
-            location = new Location()
+            if (!locIsDupe)
             {
-                LocationIndexNumber = locationIndexNumber,
-                Adress = adress,
-                City = city,
-                HasContact = false
-            };
+                CommandText = $"INSERT INTO locations(Address, CityName) VALUES ('{location.Address}', '{location.CityName}')";
+                sql.ExecuteNonQuery(CommandText);
 
-            locationsList.Add(location);
+                Console.WriteLine("\nINFO: Location successfully added!\n");
+            }
+            else
+            {
+                Console.WriteLine("\nINFO: Location is duplicate and will not be added!\n");
+            }
+
             return location;
+
         }
 
         //--------------------------------------------------EDIT------------------------------------------------------------------------
-        public void EditContact(int inputindex, string c)
+        public void EditContact(int inputindex, string c, SQLConnection sql)
         {
             var newvalue = "";
-
+            var CommandText = "";
             if (c == "1")
             {
                 Console.WriteLine($"Please enter the new value for the name.");
-                newvalue = Console.ReadLine();
-                var before = contactsList[inputindex].ContactName;
-                contactsList[inputindex].ContactName = newvalue;
-                Console.WriteLine($"\nINFO: {before} changed to {newvalue}.\n");
 
+                CommandText = $"SELECT Name FROM contacts WHERE ContactID = {inputindex};";
+                string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
+
+                newvalue = InputChecker.NoEmptyInputCheck();
+                CommandText = $"UPDATE contacts SET Name = '{newvalue}' WHERE ContactID = {inputindex};";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
             }
             else if (c == "2")
             {
-                Console.WriteLine($"Please enter the new value for the adress.");
-                newvalue = Console.ReadLine();
-                var before = contactsList[inputindex].Location.Adress;
-                contactsList[inputindex].Location.Adress = newvalue;
-                Console.WriteLine($"\nINFO: {before} changed to {newvalue}.\n");
+                Console.WriteLine($"Please enter the new value for the phonenumber.");
+
+                CommandText = $"SELECT PhoneNumber FROM contacts WHERE ContactID = {inputindex};";
+                int beforeEditValue = sql.GetBeforeEditValueInt(inputindex, CommandText);
+
+                var newphoneno = InputChecker.PhoneNumberCheck();
+                CommandText = $"UPDATE contacts SET phoneNumber = '{newphoneno}' WHERE ContactID = {inputindex};";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine($"\nPhonenumber successfully changed from {beforeEditValue} to {newphoneno}!\n");
             }
             else if (c == "3")
             {
-                Console.WriteLine($"Please enter the new value for the cityname.");
-                newvalue = Console.ReadLine();
-                var before = contactsList[inputindex].Location.City.CityName;
-                contactsList[inputindex].Location.City.CityName = newvalue;
-                Console.WriteLine($"\nINFO: {before} changed to {newvalue}.\n");
+                Console.WriteLine($"Please enter the new value for the Mailaddress.");
 
+                CommandText = $"SELECT MailAddress FROM contacts WHERE ContactID = {inputindex};";
+                string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
+
+
+                newvalue = InputChecker.MailFormatCheck();
+                CommandText = $"UPDATE contacts SET MailAddress = '{newvalue}' WHERE ContactID = {inputindex};";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
             }
-            else if (c == "4")
-            {
-                Console.WriteLine($"Please enter the new value for the phonenumber.");
-                var before = contactsList[inputindex].PhoneNumber;
-                contactsList[inputindex].PhoneNumber = InputChecker.PhoneNumberCheck();
-                Console.WriteLine($"\nINFO: {before} changed to {contactsList[inputindex].PhoneNumber}.\n");
+            //get contact as string array where contactid = inputindex - edit it
+            Contact contact = sql.OutputSingleContact(inputindex);
+            //search through database and check if there is one with the same values - if yes delete it
+            CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l ON c.LocationID = l.LocationID WHERE c.Name = '{contact.Name}' AND c.PhoneNumber = {contact.PhoneNumber} AND c.LocationID = {contact.LocationID} AND c.MailAddress = '{contact.MailAddress}' AND c.Gender = '{contact.Gender}' ";
+            long dupecount = sql.ExecuteScalarC(CommandText);
 
-            }
-            else if (c == "5")
+            if (dupecount >= 2) // there should always be a maximum of 2 
             {
-                Console.WriteLine($"Please enter the new value for the mailadress.");
-                var before = contactsList[inputindex].MailAdress;
-                contactsList[inputindex].MailAdress = InputChecker.MailFormatCheck();
-                Console.WriteLine($"\nINFO: {before} changed to {contactsList[inputindex].MailAdress}.\n");
-            }
-
-            var duplicateCount = 0;
-
-            foreach (var a in contactsList)
-            {
-                if (a.ContactName == contactsList[inputindex].ContactName && a.Location.Adress == contactsList[inputindex].Location.Adress && a.Location.City.CityName == contactsList[inputindex].Location.City.CityName && a.MailAdress == contactsList[inputindex].MailAdress && a.PhoneNumber == contactsList[inputindex].PhoneNumber)
-                {
-                    duplicateCount++;
-                    if (duplicateCount == 2)
-                    {
-                        contactsList.RemoveAt(inputindex);
-                        Console.WriteLine("Contact matched another contact and was deleted from the list.");
-                        break;
-                    }
-                }
+                CommandText = $"DELETE FROM contacts WHERE ContactID = '{inputindex}';";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine($"\nWARNING: Contact with index: {inputindex} was a duplicate after editing and got removed.\n");
             }
         }
 
-        public void EditLocation(int inputindex, string c)
+        public void EditLocation(int inputindex, string c, SQLConnection sql)
         {
+            var CommandText = "";
             var newvalue = "";
+            var beforeEditValue = "";
 
-            if (c == "1")
-            {
-                Console.WriteLine($"Please enter the new value for the adress.");
-                newvalue = Console.ReadLine();
-                var before = locationsList[inputindex].Adress;
-                locationsList[inputindex].Adress = newvalue;
-                Console.WriteLine($"\nINFO: {before} changed to {newvalue}.\n");
+            Location location = sql.OutputSingleLocation(inputindex);
+            CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l WHERE l.LocationID = c.LocationID AND l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
+            long locHasConCount = sql.ExecuteScalarC(CommandText);
 
-            }
-            else if (c == "2")
+            if (locHasConCount == 0)
             {
-                Console.WriteLine($"Please enter the new value for the cityname.");
-                newvalue = Console.ReadLine();
-                var before = locationsList[inputindex].City.CityName;
-                locationsList[inputindex].City.CityName = newvalue;
-                Console.WriteLine($"\nINFO: {before} changed to {newvalue}.\n");
-            }
-            var duplicateCount = 0;
-            foreach (var a in locationsList)
-            {
-                if (a.Adress == locationsList[inputindex].Adress && a.City.CityName == locationsList[inputindex].City.CityName)
+                if (c == "1")
                 {
-                    duplicateCount++;
-                    if (duplicateCount == 2)
-                    {
-                        locationsList.RemoveAt(inputindex);
-                        Console.WriteLine("Location matched another location and was deleted from the list.");
-                        break;
-                    }
+                    Console.WriteLine($"Please enter the new value for the adress.");
+
+                    CommandText = $"SELECT Address FROM locations WHERE LocationID = {inputindex};";
+                    beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
+
+                    newvalue = InputChecker.NoEmptyInputCheck();
+                    CommandText = $"UPDATE locations SET Address = '{newvalue}' WHERE LocationID = {inputindex};";
                 }
-                // TODO: wenn hier locdupe auftritt nach dem edit wird die loc gelöscht 
-                // und etwaige kontakte stehen ohne loc da + werden nichtmehr angezeigt
+                else if (c == "2")
+                {
+                    Console.WriteLine($"Please enter the new value for the cityname.");
+
+                    CommandText = $"SELECT CityName FROM locations WHERE LocationID = {inputindex};";
+                    beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
+
+                    newvalue = InputChecker.NoEmptyInputCheck();
+                    CommandText = $"UPDATE locations SET CityName = '{newvalue}' WHERE LocationID = {inputindex};";
+                }
+
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
+                CommandText = $"SELECT COUNT(*) FROM locations l WHERE l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
+                long dupecount = sql.ExecuteScalarC(CommandText);
+
+                if (dupecount >= 2) // there should never be more than 2 at any time
+                {
+                    CommandText = $"DELETE FROM locations WHERE LocationID = '{inputindex}';";
+                    sql.ExecuteNonQuery(CommandText);
+                    Console.WriteLine($"\nWARNING: Location with index: {inputindex} was a duplicate after editing and got removed.\n");
+                }
             }
+            else
+                Console.WriteLine("WARNING: You can't edit a location that is linked to an existing contact");
         }
 
-        //--------------------------------MERGE METHOD----------------------------------------------------------------------------------
-        public void MergeContacts(int temp1, int temp2)
+        //----------------------------------------MERGE----------------------------------------------------------------------------------
+
+        public void MergeContacts(int temp1, int temp2, SQLConnection sql)
         {
-            contactsList[temp1].Location = contactsList[temp2].Location;
+            var CommandText = $"UPDATE contacts SET LocationID = (SELECT LocationID FROM contacts WHERE ContactID = {temp1}) WHERE ContactID = {temp2};";
+            sql.ExecuteNonQuery(CommandText);
             Console.WriteLine("Contact's adress and city successfully merged.\n");
         }
 
-        //------------------------------------REMOVE METHOD------------------------------------------------------------------------------
+        //----------------------------------------REMOVE METHOD------------------------------------------------------------------------------
 
-        public void RemoveContact(int value)
+        public void RemoveContact(ContactBook contactbook, long countContact, SQLConnection sql)
         {
-            Console.WriteLine($"\nINFO: Contact with index {value + 1} ({contactsList[value].ContactName}) has been removed.");
-            contactsList[value].Location.HasContact = false;
-            contactsList.RemoveAt(value);
-            var indexNumber = 0;
-            foreach (var i in contactsList)
-            {
-                i.ContactIndexNumber = ++indexNumber;
-            }
+            Console.WriteLine("Please enter the index of the contact you want to remove.");
+            sql.ReadContactsTable();
+            Console.WriteLine("");
 
-            Console.WriteLine("\nINFO: Index have been renewed.");
-        }
-
-        public void RemoveLocation(int value)
-        {
-            if (!locationsList[value].HasContact)
+            bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
+            if (numberCheck)
             {
-                Console.WriteLine($"\nINFO: Location with index {value + 1} ({locationsList[value].Adress}, {locationsList[value].City.CityName}) has been removed.");
-                locationsList.RemoveAt(value);
-                var indexNumber = 0;
-                foreach (var i in locationsList)
-                {
-                    i.LocationIndexNumber = indexNumber++;
-                }
-                Console.WriteLine("\nINFO: Index have been renewed.");
+                var CommandText = $"DELETE FROM contacts WHERE ContactID = '{value}';";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine("\nINFO: Contact successfully deleted!\n");
             }
             else
-                Console.WriteLine($"\nWARNING: Location with index {value + 1} can not be removed because it is assigned to an existing contact!");
+                Console.WriteLine($"\nWARNING: Invalid Input\n");
+        }
+
+        public void RemoveLocation(ContactBook contactbook, long countLocation, SQLConnection sql)
+        {
+            Console.WriteLine("\nPlease enter the index of the location you want to remove.\n");
+            sql.ReadLocationsTable();
+            Console.WriteLine("");
+
+            bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
+            var CommandText = $"SELECT COUNT(l.LocationID) FROM locations l, contacts c WHERE {value} = c.LocationID AND {value} = l.LocationID;"; // check ob locationID von der zu löschenden location in contacts vorhanden ist - wenn ja -> nicht löschen
+            long count = sql.ExecuteScalar(CommandText);
+
+            CommandText = $"SELECT * FROM locations WHERE LocationID = {value}";
+            long c = sql.ExecuteScalarC(CommandText);
+            if (numberCheck && count == 0 && c > 0)
+            {
+                CommandText = $"DELETE FROM locations WHERE LocationID = {value};";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine("\nINFO: Location successfully deleted!\n");
+            }
+            else if (numberCheck && count == 0 && c == 0)
+            {
+                Console.WriteLine($"\nWARNING: No location with index: {value} found\n");
+            }
+            else if (count > 0)
+                Console.WriteLine($"\nWARNING: You can not delete a location that is associated to a contact\n");
+            else
+                Console.WriteLine("\nWARNING: Invalid Input\n");
+        }
+
+        public void RemoveEverything(SQLConnection sql)
+        {
+            Console.WriteLine("\nIf you really want to empty the entire database enter 'y' now.\n");
+            var input = Console.ReadLine();
+            if (input == "y")
+            {
+                var CommandText = $"DELETE FROM contacts;";
+                sql.ExecuteNonQuery(CommandText);
+
+                CommandText = $"DELETE FROM locations;";
+                sql.ExecuteNonQuery(CommandText);
+
+                CommandText = $"DELETE FROM sqlite_sequence;";
+                sql.ExecuteNonQuery(CommandText);
+                Console.WriteLine("\nINFO: Database successfully emptied.\n");
+            }
         }
     }
 }
