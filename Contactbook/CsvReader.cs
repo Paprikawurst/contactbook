@@ -110,7 +110,7 @@ namespace Contactbook
                     Console.WriteLine($"\nINFO: Contact on {csvLine} is duplicate and will not be added!\n");
             }
             else
-                Console.WriteLine($"Wrong input on line: {csvLine}");
+                Console.WriteLine($"\nWARNING: Wrong input on line: {csvLine}\n");
 
         }
 
