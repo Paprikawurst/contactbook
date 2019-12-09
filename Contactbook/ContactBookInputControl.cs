@@ -14,7 +14,7 @@ namespace Contactbook
             if (z && inputindex <= countContacts && inputindex > 0)
             {
 
-                Console.WriteLine("\nPlease enter the number of what you want to edit.\n1. Name\n2. PhoneNumber\n3. MailAdress");
+                Console.WriteLine("\nPlease enter the number of what you want to edit.\n1. Name\n2. PhoneNumber\n3. MailAddress");
                 var c = Console.ReadLine();
                 if (c == "1" || c == "2" || c == "3")
                 {
@@ -38,7 +38,7 @@ namespace Contactbook
             if (z && inputindex <= countLocations && inputindex > 0)
             {
 
-                Console.WriteLine("Please enter the number of what you want to edit.\n1. Adress\n2. City\n");
+                Console.WriteLine("Please enter the number of what you want to edit.\n1. Address\n2. City\n");
                 var c = Console.ReadLine();
                 if (c == "1" || c == "2")
                     contactbook.EditLocation(inputindex, c, sql);

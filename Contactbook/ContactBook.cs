@@ -19,7 +19,7 @@ namespace Contactbook
             Console.WriteLine("\nPlease enter the phone number for the new Contact");
             long phoneNumber = InputChecker.PhoneNumberCheck();
 
-            Console.WriteLine("\nPlease enter a mail adress for the new Contact");
+            Console.WriteLine("\nPlease enter a mail address for the new Contact");
             var mailAddress = InputChecker.MailFormatCheck();
 
             Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
@@ -164,7 +164,7 @@ namespace Contactbook
             {
                 if (c == "1")
                 {
-                    Console.WriteLine($"Please enter the new value for the adress.");
+                    Console.WriteLine($"Please enter the new value for the address.");
 
                     CommandText = $"SELECT Address FROM locations WHERE LocationID = {inputindex};";
                     beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
@@ -205,7 +205,7 @@ namespace Contactbook
         {
             var CommandText = $"UPDATE contacts SET LocationID = (SELECT LocationID FROM contacts WHERE ContactID = {temp1}) WHERE ContactID = {temp2};";
             sql.ExecuteNonQuery(CommandText);
-            Console.WriteLine("Contact's adress and city successfully merged.\n");
+            Console.WriteLine("Contact's address and city successfully merged.\n");
         }
 
         //----------------------------------------REMOVE METHOD------------------------------------------------------------------------------
