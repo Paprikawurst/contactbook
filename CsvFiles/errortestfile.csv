@@ -1,2 +1,2 @@
-Name;Adresse;Stadt;Telefon;Email;Gender
-Peter Müller;Waldweg 51c;KA;1453533;pmueller@web.de;Male
+Name,Adresse,Stadt,Telefon,Email,Gender
+Peter Müller,Waldweg 51c,KA,1453533,pmueller@web.de,Male
