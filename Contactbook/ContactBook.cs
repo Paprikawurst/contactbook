@@ -7,32 +7,20 @@ namespace Contactbook
     public class ContactBook
     {
         //----------------------------------------ADD CONTACT-----------------------------------------------------
-        public void AddContact(ContactBook contactbook, SQLConnection sql, long countLocations)
+        public void AddContact(ContactBook contactbook, SQLConnection sql, long countLocations, string name, Location location, long phoneNumber, string mailAddress, string gender)
         {
-            Console.WriteLine("\nPlease enter the Name of the new Contact.");
-            var name = InputChecker.NoEmptyInputCheck();
 
-            Location location = AddOrGetLocation(contactbook, sql, countLocations);
-
-            long LocationID = sql.GetLocationID(location);
-
-            Console.WriteLine("\nPlease enter the phone number for the new Contact");
-            long phoneNumber = InputChecker.PhoneNumberCheck();
-
-            Console.WriteLine("\nPlease enter a mail address for the new Contact");
-            var mailAddress = InputChecker.MailFormatCheck();
-
-            Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
-            var gender = InputChecker.GenderCheck();
+            int LocationID = (int)sql.GetLocationID(location);
 
             Contact contact = new Contact
             {
                 Name = name,
-                LocationID = (int)LocationID,
+                LocationID = LocationID,
                 PhoneNumber = phoneNumber,
                 MailAddress = mailAddress,
                 Gender = gender
             };
+
             List<Contact> contactslist = sql.OutputContactTableToList();
             var conIsDupe = false;
 
@@ -54,13 +42,8 @@ namespace Contactbook
         }
 
         //---------------------------------------ADD OR GET LOCATION-----------------------------------------------------------------------
-        public Location AddOrGetLocation(ContactBook contactbook, SQLConnection sql, long countLocations)
+        public Location AddOrGetLocation(ContactBook contactbook, SQLConnection sql, long countLocations, string address, string cityName)
         {
-            Console.WriteLine("\nPlease enter the address of the new contact.");
-            var address = InputChecker.NoEmptyInputCheck();
-
-            Console.WriteLine("\nPlease enter the cityname of the new contact");
-            var cityName = InputChecker.NoEmptyInputCheck();
 
             Location location = new Location()
             {

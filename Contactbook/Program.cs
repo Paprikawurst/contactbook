@@ -32,9 +32,9 @@ namespace Contactbook
                     input = Console.ReadLine();
 
                     if (input == "1")
-                        contactbook.AddContact(contactbook, sql, countLocations);
+                        ContactBookInputControl.AddContactCommand(contactbook, sql, countLocations);
                     else if (input == "2")
-                        contactbook.AddOrGetLocation(contactbook, sql, countLocations);
+                        ContactBookInputControl.AddOrGetLocationCommand(contactbook, sql, countLocations);
                     else
                         Console.WriteLine("WARNING: Invalid Input.\n");
                 }
@@ -65,6 +65,8 @@ namespace Contactbook
                                 else
                                     Console.WriteLine("\nWARNING: There is no location that can be edited.\n");
                             }
+                            else
+                                Console.WriteLine("WARNING: Invalid Input");
                         }
                         //MERGE
 
@@ -86,6 +88,7 @@ namespace Contactbook
                     {
                         Console.WriteLine("\nWhat do you want to remove?\n1. Contact\n2. Location\n3. Everything\n");
                         var b = Console.ReadLine();
+
                         if (b == "1")
                         {
                             if (countContacts > 0)
@@ -134,15 +137,7 @@ namespace Contactbook
                 // HELP METHOD
                 else if (input == "Help")
                 {
-                    Console.WriteLine("\nTyping 'Add' lets you add a new contact or a location to the database.");
-                    Console.WriteLine("Typing 'Edit' lets you edit any value of a contact or location or merge two existing contacts.");
-                    Console.WriteLine("Typing 'Remove' lets you remove an existing contact or location from the contactbook.");
-                    Console.WriteLine("Typing 'List' shows you various List options.");
-                    Console.WriteLine("Typing 'Quit' closes the program.");
-                    Console.WriteLine("Typing 'Help' shows this text again.");
-                    Console.WriteLine("Typing 'Import' lets you import a CSV-File.");
-                    Console.WriteLine("Typing 'Clear' lets you clear the console screen.");
-                    Console.WriteLine("'WARNING' indicates wrong input - 'INFO' indicates changed values.\n");
+                    ContactBookInputControl.HelpCommand();
                 }
 
                 //IMPORT METHOD
