@@ -1,7 +1,2 @@
-Name;Adresse;Stadt;Telefon;Email
-Peter Müller;Waldweg 51c;KA;1453533;pmueller@web.de
-Sarah Weber;Langer Weg 44a;LD;212412;sweber@gmx.com
-Gustav Schlosser;Schlossweg 112;SP;54557;gsch@web.de
-;Waldweg 51c;MA;;
-;Gärtnerring 11;KA;;
-;Kiefernweg 41;LU;;
+Name;Adresse;Stadt;Telefon;Email;Gender
+Peter Müller;Waldweg 51c;KA;1453533;pmueller@web.de;Male
