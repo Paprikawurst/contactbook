@@ -8,6 +8,8 @@ namespace Contactbook
         {
             //TODO: Refactoring komplett
             //TODO: Trennung von Input und Logik für WPF
+            //TODO: Errortest.csv anpassen + csv path anpassen + generic?
+            //TODO: git csv uploaden??
 
             ShowList showList = new ShowList();
             ContactBook contactbook = new ContactBook();
