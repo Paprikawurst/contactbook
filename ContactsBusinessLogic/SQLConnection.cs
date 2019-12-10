@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 
 
-namespace Contactbook
+namespace ContactbookLogicLibrary
 {
+
+    //TODOH: separate Console-SQL from rest
     public class SQLConnection
     {
         const string CONNECTION_STRING = "Data Source=C:\\Users\\nwolff\\Desktop\\git\\contactbook\\ContactbookConsole\\contactbookDB.db;";

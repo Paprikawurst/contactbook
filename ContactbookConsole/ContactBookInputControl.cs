@@ -1,18 +1,19 @@
-﻿using ContactData;
+﻿using ContactbookLogicLibrary;
+using ContactData;
 using System;
 
-namespace Contactbook
+namespace ContactbookConsole
 {
-    public static class ContactBookInputControl
+    public static class ContactbookConsoleInputControl
     {
 
         // Add Contact Command
-        public static void AddContactCommand(ContactBook contactbook, SQLConnection sql, long countLocations)
+        public static void AddContactCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations)
         {
             Console.WriteLine("\nPlease enter the Name of the new Contact.");
             var name = InputChecker.NoEmptyInputCheck();
 
-            Location location = AddOrGetLocationCommand(contactbook, sql, countLocations);
+            Location location = AddOrGetLocationCommand(contactbooklogic, sql, countLocations);
 
             Console.WriteLine("\nPlease enter the phone number for the new Contact");
             long phoneNumber = InputChecker.PhoneNumberCheck();
@@ -23,10 +24,12 @@ namespace Contactbook
             Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
             var gender = InputChecker.GenderCheck();
 
-            contactbook.AddContact(contactbook, sql, countLocations, name, location, phoneNumber, mailAddress, gender);
+            contactbooklogic.AddContact(contactbooklogic, sql, countLocations, name, location, phoneNumber, mailAddress, gender);
+
         }
 
-        public static Location AddOrGetLocationCommand(ContactBook contactbook, SQLConnection sql, long countLocations)
+        //Add or Get Location Command
+        public static Location AddOrGetLocationCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations)
         {
             Console.WriteLine("\nPlease enter the address of the new contact.");
             var address = InputChecker.NoEmptyInputCheck();
@@ -34,12 +37,12 @@ namespace Contactbook
             Console.WriteLine("\nPlease enter the cityname of the new contact");
             var cityName = InputChecker.NoEmptyInputCheck();
 
-            Location location = contactbook.AddOrGetLocation(contactbook, sql, countLocations, address, cityName);
+            Location location = contactbooklogic.AddOrGetLocation(contactbooklogic, sql, countLocations, address, cityName);
             return location;
         }
 
         // Edit Contact Command
-        public static void EditContactCommand(ContactBook contactbook, SQLConnection sql, long countContacts)
+        public static void EditContactCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countContacts)
         {
             Console.WriteLine("\nPlease enter the index of the contact you wish to edit.");
             sql.ReadContactsTable();
@@ -52,7 +55,7 @@ namespace Contactbook
                 var c = Console.ReadLine();
                 if (c == "1" || c == "2" || c == "3")
                 {
-                    contactbook.EditContact(inputindex, c, sql);
+                    contactbooklogic.EditContact(inputindex, c, sql);
                 }
                 else
                     Console.WriteLine("WARNING: Invalid Input.");
@@ -62,7 +65,7 @@ namespace Contactbook
         }
 
         // Edit Location Command
-        public static void EditLocationCommand(ContactBook contactbook, SQLConnection sql, long countLocations)
+        public static void EditLocationCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations)
         {
             Console.WriteLine($"Please enter the index of the location you wish to edit.");
             sql.ReadLocationsTable();
@@ -75,7 +78,7 @@ namespace Contactbook
                 Console.WriteLine("Please enter the number of what you want to edit.\n1. Address\n2. City\n");
                 var c = Console.ReadLine();
                 if (c == "1" || c == "2")
-                    contactbook.EditLocation(inputindex, c, sql);
+                    contactbooklogic.EditLocation(inputindex, c, sql);
                 else
                     Console.WriteLine("WARNING: Invalid Input.");
             }
@@ -84,7 +87,7 @@ namespace Contactbook
         }
 
         // Merge Command
-        public static void MergeCommand(ContactBook contactbook, SQLConnection sql)
+        public static void MergeCommand(ContactBookLogic contactbooklogic, SQLConnection sql)
         {
             Console.WriteLine("Please enter the index of the contact which merges his location into a second contact.");
 
@@ -99,7 +102,7 @@ namespace Contactbook
                 bool y = int.TryParse(Console.ReadLine(), out int temp2);
                 if (y)
                 {
-                    contactbook.MergeContacts(temp1, temp2, sql);
+                    contactbooklogic.MergeContacts(temp1, temp2, sql);
                 }
                 else
                     Console.WriteLine("WARNING: Invalid Input!");
@@ -108,6 +111,8 @@ namespace Contactbook
                 Console.WriteLine("WARNING: Invalid Index!");
         }
 
+
+        // Help Command
         public static void HelpCommand()
         {
             Console.WriteLine("\nTyping 'Add' lets you add a new contact or a location to the database.");

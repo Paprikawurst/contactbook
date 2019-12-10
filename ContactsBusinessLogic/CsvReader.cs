@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using ContactData;
 
-namespace Contactbook
+namespace ContactbookLogicLibrary
 {
     public class CsvReader
     {
-        public void ImportEntriesFromCsvIntoList(ContactBook contactbook, string csvFileName, SQLConnection sql)
+        public void ImportEntriesFromCsvIntoList(ContactBookLogic contactbooklogic, string csvFileName, SQLConnection sql)
         {
             int csvLoop = 1;
-            var csvFilePath = $@"C:\Users\nwolff\Desktop\Projekte\dotnet\{csvFileName}.csv";
+            var csvFilePath = $@"C:\Users\nwolff\Desktop\git\contactbook\CsvFiles\{csvFileName}.csv";
             Console.WriteLine($"\nImporting CSV-File from: {csvFilePath}\n");
 
             using (StreamReader sr = new StreamReader(csvFilePath))
@@ -21,7 +21,7 @@ namespace Contactbook
                 while ((csvLine = sr.ReadLine()) != null)
                 {
                     ++csvLoop;
-                    var a = csvLine.Split(';'); // turns csvLine into SplitStringArray
+                    var a = csvLine.Split(','); // turns csvLine into SplitStringArray
                     a = a.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
                     //CSV CONTACT

@@ -1,9 +1,10 @@
 ﻿using System;
 
-namespace Contactbook
+namespace ContactbookLogicLibrary
 {
     public static class InputChecker
     {
+        // TODO: inputchecker für übergebenen string (true false? - erneute eingabe?) console.readline ablösen + separate console output
 
         //ADDRESS CHECK
         public static string NoEmptyInputCheck()
@@ -93,12 +94,12 @@ namespace Contactbook
             if (string.IsNullOrWhiteSpace(input))
             {
                 input = "wronginput";
-                    return input;
+                return input;
             }
             else
                 return input;
         }
-        
+
 
         //CSV GENDER CHECK
         public static string CsvGenderCheck(string input)

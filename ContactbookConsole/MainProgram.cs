@@ -1,18 +1,18 @@
-﻿using System;
+﻿using ContactbookLogicLibrary;
+using System;
 
-namespace Contactbook
+namespace ContactbookConsole
 {
-    public class Program
+    public class MainProgram
     {
         static void Main()
         {
             //TODO: Refactoring komplett
             //TODO: Trennung von Input und Logik für WPF
             //TODO: Errortest.csv anpassen + csv path anpassen + generic?
-            //TODO: git csv uploaden??
 
             ShowList showList = new ShowList();
-            ContactBook contactbook = new ContactBook();
+            ContactBookLogic contactbooklogic = new ContactBookLogic();
             CsvReader reader = new CsvReader();
             SQLConnection sql = new SQLConnection();
 
@@ -34,9 +34,9 @@ namespace Contactbook
                     input = Console.ReadLine();
 
                     if (input == "1")
-                        ContactBookInputControl.AddContactCommand(contactbook, sql, countLocations);
+                        ContactbookConsoleInputControl.AddContactCommand(contactbooklogic, sql, countLocations);
                     else if (input == "2")
-                        ContactBookInputControl.AddOrGetLocationCommand(contactbook, sql, countLocations);
+                        ContactbookConsoleInputControl.AddOrGetLocationCommand(contactbooklogic, sql, countLocations);
                     else
                         Console.WriteLine("WARNING: Invalid Input.\n");
                 }
@@ -56,14 +56,14 @@ namespace Contactbook
                             if (a == "1")
                             {
                                 if (countContacts > 0)
-                                    ContactBookInputControl.EditContactCommand(contactbook, sql, countContacts);
+                                    ContactbookConsoleInputControl.EditContactCommand(contactbooklogic, sql, countContacts);
                                 else
                                     Console.WriteLine("\nWARNING: There is no contact that can be edited.\n");
                             }
                             else if (a == "2")
                             {
                                 if (countLocations > 0)
-                                    ContactBookInputControl.EditLocationCommand(contactbook, sql, countLocations);
+                                    ContactbookConsoleInputControl.EditLocationCommand(contactbooklogic, sql, countLocations);
                                 else
                                     Console.WriteLine("\nWARNING: There is no location that can be edited.\n");
                             }
@@ -74,7 +74,7 @@ namespace Contactbook
 
                         else if (i == "2" && countContacts > 1)
                         {
-                            ContactBookInputControl.MergeCommand(contactbook, sql);
+                            ContactbookConsoleInputControl.MergeCommand(contactbooklogic, sql);
                         }
                         else
                             Console.WriteLine("\nWARNING: Invalid Input or not enough contacts.");
@@ -94,14 +94,14 @@ namespace Contactbook
                         if (b == "1")
                         {
                             if (countContacts > 0)
-                                contactbook.RemoveContact(contactbook, countContacts, sql);
+                                contactbooklogic.RemoveContact(contactbooklogic, countContacts, sql);
                             else
                                 Console.WriteLine("\nWARNING: There is no contact that can be removed.\n");
                         }
                         else if (b == "2")
                         {
                             if (countLocations > 0)
-                                contactbook.RemoveLocation(contactbook, countLocations, sql);
+                                contactbooklogic.RemoveLocation(contactbooklogic, countLocations, sql);
                             else
                                 Console.WriteLine("\nWARNING: There is no location that can be removed.\n");
                         }
@@ -109,7 +109,7 @@ namespace Contactbook
                         {
                             if (countContacts > 0 || countLocations > 0)
                             {
-                                contactbook.RemoveEverything(sql);
+                                contactbooklogic.RemoveEverything(sql);
                             }
                             else
                                 Console.WriteLine("\nWARNING: There is nothing that can be deleted from the table.\n");
@@ -124,7 +124,7 @@ namespace Contactbook
                 else if (input == "List")
                 {
                     if (countContacts > 0 || countLocations > 0)
-                        showList.ListWanted(contactbook, sql, countContacts, countLocations);
+                        showList.ListWanted(contactbooklogic, sql, countContacts, countLocations);
                     else
                         Console.WriteLine("\nWARNING: There is nothing that can be listed.\n");
                 }
@@ -139,25 +139,25 @@ namespace Contactbook
                 // HELP METHOD
                 else if (input == "Help")
                 {
-                    ContactBookInputControl.HelpCommand();
+                    ContactbookConsoleInputControl.HelpCommand();
                 }
 
                 //IMPORT METHOD
                 else if (input == "Import")
                 {
-                    Console.WriteLine("Do you want to import 1. correcttest.csv or 2. errortest.csv?\nType 1 or 2\n");
+                    Console.WriteLine("Do you want to import 1. testfile.csv or 2. errortestfile.csv?\nType 1 or 2\n");
                     string csvFileName = "";
                     string fileNameInput = Console.ReadLine();
                     Console.WriteLine("");
                     if (fileNameInput == "1")
                     {
-                        csvFileName = "correcttest";
-                        reader.ImportEntriesFromCsvIntoList(contactbook, csvFileName, sql);
+                        csvFileName = "testfile";
+                        reader.ImportEntriesFromCsvIntoList(contactbooklogic, csvFileName, sql);
                     }
                     else if (fileNameInput == "2")
                     {
-                        csvFileName = "errortest";
-                        reader.ImportEntriesFromCsvIntoList(contactbook, csvFileName, sql);
+                        csvFileName = "errortestfile";
+                        reader.ImportEntriesFromCsvIntoList(contactbooklogic, csvFileName, sql);
                     }
                     else
                         Console.WriteLine("WARNING: Wrong input.");
