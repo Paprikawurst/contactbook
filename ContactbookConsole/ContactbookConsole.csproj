@@ -68,9 +68,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ContactsBusinessLogic\ContactsBusinessLogic.csproj">
+    <ProjectReference Include="..\ContactsBusinessLogic\ContactbookLogicLibrary.csproj">
       <Project>{00ab417e-dd65-4425-bf9b-155871199ce2}</Project>
-      <Name>ContactsBusinessLogic</Name>
+      <Name>ContactbookLogicLibrary</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
