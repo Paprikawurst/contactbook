@@ -7,6 +7,7 @@ namespace Contactbook
         static void Main()
         {
             //TODO: Refactoring komplett
+            //TODO: Trennung von Input und Logik für WPF
 
             ShowList showList = new ShowList();
             ContactBook contactbook = new ContactBook();

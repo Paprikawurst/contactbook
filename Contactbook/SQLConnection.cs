@@ -8,7 +8,7 @@ namespace Contactbook
 {
     public class SQLConnection
     {
-        const string CONNECTION_STRING = "Data Source=C:\\Users\\nwolff\\Desktop\\Projekte\\dotnet\\ongoing\\contactbooksqlite\\Contactbook\\contactbookDB.db;";
+        const string CONNECTION_STRING = "Data Source=C:\\Users\\nwolff\\Desktop\\git\\contactbook\\Contactbook\\contactbookDB.db;";
 
         public void ExecuteNonQuery(string CommandText)
         {
