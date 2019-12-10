@@ -18,7 +18,7 @@ namespace ContactbookConsole
             Console.WriteLine("\nPlease enter the phone number for the new Contact");
             long phoneNumber = InputChecker.PhoneNumberCheck();
 
-            Console.WriteLine("\nPlease enter a mail address for the new Contact");
+            Console.WriteLine("\nPlease enter a mailaddress for the new Contact");
             var mailAddress = InputChecker.MailFormatCheck();
 
             Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
@@ -50,12 +50,46 @@ namespace ContactbookConsole
             bool z = int.TryParse(Console.ReadLine(), out int inputindex);
             if (z && inputindex <= countContacts && inputindex > 0)
             {
-
+                var newvalue = "";
+                var CommandText = "";
                 Console.WriteLine("\nPlease enter the number of what you want to edit.\n1. Name\n2. PhoneNumber\n3. MailAddress");
                 var c = Console.ReadLine();
-                if (c == "1" || c == "2" || c == "3")
+                if (c == "1")
                 {
-                    contactbooklogic.EditContact(inputindex, c, sql);
+                    Console.WriteLine($"Please enter the new value for the name.");
+
+                    CommandText = $"SELECT Name FROM contacts WHERE ContactID = {inputindex};";
+                    string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
+
+                    newvalue = InputChecker.NoEmptyInputCheck();
+                    CommandText = $"UPDATE contacts SET Name = '{newvalue}' WHERE ContactID = {inputindex};";
+                    sql.ExecuteNonQuery(CommandText);
+                    Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
+                }
+                else if (c == "2")
+                {
+                    Console.WriteLine($"Please enter the new value for the phonenumber.");
+
+                    CommandText = $"SELECT PhoneNumber FROM contacts WHERE ContactID = {inputindex};";
+                    int beforeEditValue = sql.GetBeforeEditValueInt(inputindex, CommandText);
+
+                    var newphoneno = InputChecker.PhoneNumberCheck();
+                    CommandText = $"UPDATE contacts SET phoneNumber = '{newphoneno}' WHERE ContactID = {inputindex};";
+                    sql.ExecuteNonQuery(CommandText);
+                    Console.WriteLine($"\nPhonenumber successfully changed from {beforeEditValue} to {newphoneno}!\n");
+                }
+                else if (c == "3")
+                {
+                    Console.WriteLine($"Please enter the new value for the Mailaddress.");
+
+                    CommandText = $"SELECT MailAddress FROM contacts WHERE ContactID = {inputindex};";
+                    string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
+
+
+                    newvalue = InputChecker.MailFormatCheck();
+                    CommandText = $"UPDATE contacts SET MailAddress = '{newvalue}' WHERE ContactID = {inputindex};";
+                    sql.ExecuteNonQuery(CommandText);
+                    Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
                 }
                 else
                     Console.WriteLine("WARNING: Invalid Input.");

@@ -12,7 +12,7 @@ namespace ContactbookLogicLibrary
         {
             int csvLoop = 1;
             var csvFilePath = $@"C:\Users\nwolff\Desktop\git\contactbook\CsvFiles\{csvFileName}.csv";
-            Console.WriteLine($"\nImporting CSV-File from: {csvFilePath}\n");
+            //TODOL: Importing CSV-File from: {csvFilePath}
 
             using (StreamReader sr = new StreamReader(csvFilePath))
             {
@@ -35,19 +35,19 @@ namespace ContactbookLogicLibrary
                     {
                         ReadAndAddLocationFromCsvFile(csvLine, sql);
                     }
-                    else
-                        Console.WriteLine($"WARNING: Invalid Entry on line  {csvLoop} : {csvLine}");
+
+                    //   TODOL: else message Invalid Entry on line  {csvLoop} : {csvLine}");
                 }
             }
         }
 
         public void ReadAndAddContactFromCsvLine(string csvLine, SQLConnection sql)
         {
-            string[] parts = csvLine.Split(';');
+            string[] parts = csvLine.Split(',');
             string namePart = InputChecker.CsvEmptyInputCheck(parts[0]);
             string addressPart = InputChecker.CsvEmptyInputCheck(parts[1]);
             string cityNamePart = InputChecker.CsvEmptyInputCheck(parts[2]);
-            long.TryParse(parts[3], out long a);   
+            long.TryParse(parts[3], out long a);
             long phoneNumberPart = a;
             string mailAddressPart = InputChecker.CsvMailFormatCheck(parts[4]);
             string genderPart = InputChecker.CsvGenderCheck(parts[5]);
@@ -75,10 +75,7 @@ namespace ContactbookLogicLibrary
                     CommandText = $"INSERT INTO locations(Address, CityName) VALUES ('{location.Address}', '{location.CityName}')";
                     sql.ExecuteNonQuery(CommandText);
                 }
-                else
-                {
-                    Console.WriteLine("\nINFO: Location is duplicate and will not be added!\n");
-                }
+                //    TODOL: Message INFO: Location is duplicate and will not be added
 
                 long LocationID = sql.GetLocationID(location);
 
@@ -106,17 +103,15 @@ namespace ContactbookLogicLibrary
                     CommandText = $"INSERT INTO contacts(Name, LocationID, PhoneNumber, MailAddress, Gender) VALUES('{contact.Name}', '{contact.LocationID}', '{contact.PhoneNumber}', '{contact.MailAddress}', '{contact.Gender}');";
                     sql.ExecuteNonQuery(CommandText);
                 }
-                else
-                    Console.WriteLine($"\nINFO: Contact on {csvLine} is duplicate and will not be added!\n");
+                // TODOL: Message INFO: Contact on {csvLine} is duplicate and will not be added
             }
-            else
-                Console.WriteLine($"\nWARNING: Wrong input on line: {csvLine}\n");
+            //   TODOL: message WARNING: Wrong input on line: {csvLine}
 
         }
 
         public void ReadAndAddLocationFromCsvFile(string csvLine, SQLConnection sql)
         {
-            string[] parts = csvLine.Split(';');
+            string[] parts = csvLine.Split(',');
             parts = parts.Where(x => !string.IsNullOrEmpty(x)).ToArray();
             string addressPart = InputChecker.CsvEmptyInputCheck(parts[0]);
             string cityNamePart = InputChecker.CsvEmptyInputCheck(parts[1]);
@@ -145,13 +140,9 @@ namespace ContactbookLogicLibrary
                     CommandText = $"INSERT INTO locations(Address, CityName) VALUES ('{location.Address}', '{location.CityName}')";
                     sql.ExecuteNonQuery(CommandText);
                 }
-                else
-                {
-                    Console.WriteLine("\nINFO: Location is duplicate and will not be added!\n");
-                }
+                    //TODOL: message INFO: Location is duplicate and will not be added
             }
-            else
-                Console.WriteLine($"\nWARNING: Wrong input on line: {csvLine}\n");
+                //TODOL: message WARNING: Wrong input on line: {csvLine}
         }
     }
 }

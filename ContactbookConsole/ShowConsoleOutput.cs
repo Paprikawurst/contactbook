@@ -3,7 +3,7 @@ using System;
 
 namespace ContactbookConsole
 {
-    public class ShowList
+    public class ShowConsoleOutput
     {
         //TODO: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist
         public void ListWanted(ContactBookLogic contactbooklogic, SQLConnection sql, long countContacts, long countLocations)

@@ -1,5 +1,6 @@
 ﻿using ContactbookLogicLibrary;
 using System;
+using System.IO;
 
 namespace ContactbookConsole
 {
@@ -9,9 +10,9 @@ namespace ContactbookConsole
         {
             //TODO: Refactoring komplett
             //TODO: Trennung von Input und Logik für WPF
-            //TODO: Errortest.csv anpassen + csv path anpassen + generic?
+            //TODO: csv path anpassen + generic?
 
-            ShowList showList = new ShowList();
+            ShowConsoleOutput showList = new ShowConsoleOutput();
             ContactBookLogic contactbooklogic = new ContactBookLogic();
             CsvReader reader = new CsvReader();
             SQLConnection sql = new SQLConnection();
@@ -49,6 +50,7 @@ namespace ContactbookConsole
                         var i = Console.ReadLine();
 
                         //EDIT
+                        //TODO: hier edit refactoren
                         if (i == "1")
                         {
                             Console.WriteLine("\nWhat do you want to edit?\n1. Contact\n2. Location\n");
@@ -94,14 +96,35 @@ namespace ContactbookConsole
                         if (b == "1")
                         {
                             if (countContacts > 0)
-                                contactbooklogic.RemoveContact(contactbooklogic, countContacts, sql);
-                            else
-                                Console.WriteLine("\nWARNING: There is no contact that can be removed.\n");
+                            {
+                                Console.WriteLine("Please enter the index of the contact you want to remove.");
+                                sql.ReadContactsTable();
+                                Console.WriteLine("");
+
+                                bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
+                                if (numberCheck)
+                                {
+                                    contactbooklogic.RemoveContact(contactbooklogic, countContacts, sql, value);
+                                }
+                                else
+                                    Console.WriteLine("\nWARNING: There is no contact that can be removed.\n");
+                            }
                         }
                         else if (b == "2")
                         {
                             if (countLocations > 0)
-                                contactbooklogic.RemoveLocation(contactbooklogic, countLocations, sql);
+                            {
+                                Console.WriteLine("\nPlease enter the index of the location you want to remove.\n");
+                                sql.ReadLocationsTable();
+                                Console.WriteLine("");
+                                bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
+                                if (numberCheck)
+                                {
+                                    contactbooklogic.RemoveLocation(contactbooklogic, countLocations, sql, value);
+                                }
+                                else
+                                    Console.WriteLine("WARNING: Invalid Input");
+                            }
                             else
                                 Console.WriteLine("\nWARNING: There is no location that can be removed.\n");
                         }
@@ -109,16 +132,21 @@ namespace ContactbookConsole
                         {
                             if (countContacts > 0 || countLocations > 0)
                             {
-                                contactbooklogic.RemoveEverything(sql);
+                                Console.WriteLine("\nIf you really want to empty the entire database enter 'y' now.\n");
+                                var confirmation = Console.ReadLine();
+                                if (confirmation == "y")
+                                {
+                                    contactbooklogic.RemoveEverything(sql);
+                                }
                             }
                             else
                                 Console.WriteLine("\nWARNING: There is nothing that can be deleted from the table.\n");
                         }
                         else
                             Console.WriteLine("WARNING: Invalid Input.\n");
-                    }
-                    else
-                        Console.WriteLine("\nWARNING: There is nothing that can be removed.\n");
+                        }
+                        else
+                            Console.WriteLine("\nWARNING: There is nothing that can be removed.\n");
                 }
                 // LIST METHOD
                 else if (input == "List")
@@ -145,6 +173,7 @@ namespace ContactbookConsole
                 //IMPORT METHOD
                 else if (input == "Import")
                 {
+
                     Console.WriteLine("Do you want to import 1. testfile.csv or 2. errortestfile.csv?\nType 1 or 2\n");
                     string csvFileName = "";
                     string fileNameInput = Console.ReadLine();

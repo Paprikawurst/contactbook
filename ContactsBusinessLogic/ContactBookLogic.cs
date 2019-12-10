@@ -36,11 +36,8 @@ namespace ContactbookLogicLibrary
             {
                 var CommandText = $"INSERT INTO contacts(Name, LocationID, PhoneNumber, MailAddress, Gender) VALUES('{contact.Name}', '{LocationID}', '{contact.PhoneNumber}', '{contact.MailAddress}', '{contact.Gender}');";
                 sql.ExecuteNonQuery(CommandText);
-
-                Console.WriteLine("\nINFO: Contact successfully added!\n");
+                //TODOL: info ob contact geaddet oder dupe war und nicht geaddet
             }
-            else
-                Console.WriteLine("\nINFO: Contact is duplicate and will not be added!\n");
         }
 
         //---------------------------------------ADD OR GET LOCATION-----------------------------------------------------------------------
@@ -68,15 +65,9 @@ namespace ContactbookLogicLibrary
                 CommandText = $"INSERT INTO locations(Address, CityName) VALUES ('{location.Address}', '{location.CityName}')";
                 sql.ExecuteNonQuery(CommandText);
 
-                Console.WriteLine("\nINFO: Location successfully added!\n");
+                //TODOL: info ob location geaddet oder dupe war und nicht geaddet
             }
-            else
-            {
-                Console.WriteLine("\nINFO: Location is duplicate and will not be added!\n");
-            }
-
             return location;
-
         }
 
         //--------------------------------------------------EDIT------------------------------------------------------------------------
@@ -84,6 +75,7 @@ namespace ContactbookLogicLibrary
         {
             var newvalue = "";
             var CommandText = "";
+            bool CorrectInput = false;
             if (c == "1")
             {
                 Console.WriteLine($"Please enter the new value for the name.");
@@ -91,7 +83,8 @@ namespace ContactbookLogicLibrary
                 CommandText = $"SELECT Name FROM contacts WHERE ContactID = {inputindex};";
                 string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
 
-                newvalue = InputChecker.NoEmptyInputCheck();
+                newvalue = Console.ReadLine();
+                CorrectInput = InputChecker.NoEmptyInputCheck(newvalue);
                 CommandText = $"UPDATE contacts SET Name = '{newvalue}' WHERE ContactID = {inputindex};";
                 sql.ExecuteNonQuery(CommandText);
                 Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
@@ -121,7 +114,7 @@ namespace ContactbookLogicLibrary
                 sql.ExecuteNonQuery(CommandText);
                 Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
             }
-            //get contact as string array where contactid = inputindex - edit it
+            //get contact where contactid = inputindex - edit it
             Contact contact = sql.OutputSingleContact(inputindex);
             //search through database and check if there is one with the same values - if yes delete it
             CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l ON c.LocationID = l.LocationID WHERE c.Name = '{contact.Name}' AND c.PhoneNumber = {contact.PhoneNumber} AND c.LocationID = {contact.LocationID} AND c.MailAddress = '{contact.MailAddress}' AND c.Gender = '{contact.Gender}' ";
@@ -195,67 +188,42 @@ namespace ContactbookLogicLibrary
 
         //----------------------------------------REMOVE METHOD------------------------------------------------------------------------------
 
-        public void RemoveContact(ContactBookLogic contactbooklogic, long countContact, SQLConnection sql)
+        public void RemoveContact(ContactBookLogic contactbooklogic, long countContact, SQLConnection sql, int value)
         {
-            Console.WriteLine("Please enter the index of the contact you want to remove.");
-            sql.ReadContactsTable();
-            Console.WriteLine("");
-
-            bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
-            if (numberCheck)
-            {
+  
                 var CommandText = $"DELETE FROM contacts WHERE ContactID = '{value}';";
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine("\nINFO: Contact successfully deleted!\n");
-            }
-            else
-                Console.WriteLine($"\nWARNING: Invalid Input\n");
+                //TODOL: contact successfully deleted message
+            //TODOL: invalid input message
         }
 
-        public void RemoveLocation(ContactBookLogic contactbooklogic, long countLocation, SQLConnection sql)
+        public void RemoveLocation(ContactBookLogic contactbooklogic, long countLocation, SQLConnection sql, int value)
         {
-            Console.WriteLine("\nPlease enter the index of the location you want to remove.\n");
-            sql.ReadLocationsTable();
-            Console.WriteLine("");
 
-            bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
             var CommandText = $"SELECT COUNT(l.LocationID) FROM locations l, contacts c WHERE {value} = c.LocationID AND {value} = l.LocationID;"; // check ob locationID von der zu löschenden location in contacts vorhanden ist - wenn ja -> nicht löschen
             long count = sql.ExecuteScalar(CommandText);
 
             CommandText = $"SELECT * FROM locations WHERE LocationID = {value}";
             long c = sql.ExecuteScalarC(CommandText);
-            if (numberCheck && count == 0 && c > 0)
+            if (count == 0 && c > 0)
             {
                 CommandText = $"DELETE FROM locations WHERE LocationID = {value};";
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine("\nINFO: Location successfully deleted!\n");
+                //TODOL: location successfully deleted message
             }
-            else if (numberCheck && count == 0 && c == 0)
-            {
-                Console.WriteLine($"\nWARNING: No location with index: {value} found\n");
-            }
-            else if (count > 0)
-                Console.WriteLine($"\nWARNING: You can not delete a location that is associated to a contact\n");
-            else
-                Console.WriteLine("\nWARNING: Invalid Input\n");
+            //TODOL: else 1. no location with index value found 2. you can not delete location that is associated to a contact 3. invalid input
         }
 
         public void RemoveEverything(SQLConnection sql)
         {
-            Console.WriteLine("\nIf you really want to empty the entire database enter 'y' now.\n");
-            var input = Console.ReadLine();
-            if (input == "y")
-            {
-                var CommandText = $"DELETE FROM contacts;";
-                sql.ExecuteNonQuery(CommandText);
+            var CommandText = $"DELETE FROM contacts;";
+            sql.ExecuteNonQuery(CommandText);
 
-                CommandText = $"DELETE FROM locations;";
-                sql.ExecuteNonQuery(CommandText);
+            CommandText = $"DELETE FROM locations;";
+            sql.ExecuteNonQuery(CommandText);
 
-                CommandText = $"DELETE FROM sqlite_sequence;";
-                sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine("\nINFO: Database successfully emptied.\n");
-            }
+            CommandText = $"DELETE FROM sqlite_sequence;";
+            sql.ExecuteNonQuery(CommandText);
         }
     }
 }

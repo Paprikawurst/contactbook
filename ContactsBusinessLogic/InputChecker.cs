@@ -4,25 +4,22 @@ namespace ContactbookLogicLibrary
 {
     public static class InputChecker
     {
-        // TODO: inputchecker für übergebenen string (true false? - erneute eingabe?) console.readline ablösen + separate console output
+        // TODO: inputchecker für übergebenen string (true false? - erneute eingabe?) console.readline ablösen
 
         //ADDRESS CHECK
-        public static string NoEmptyInputCheck()
+        public static bool NoEmptyInputCheck(string input)
         {
-            var input = "";
             bool InputNotEmpty = false;
 
             while (!InputNotEmpty)
             {
-                input = Console.ReadLine();
                 if (!string.IsNullOrWhiteSpace(input))
                 {
                     InputNotEmpty = true;
                 }
-                else
-                    Console.WriteLine("\nWARNING: Input can not be empty!\n");
+                //TODOL: message input cannot be empty
             }
-            return input;
+            return InputNotEmpty;
         }
 
         //MAILFORMAT CHECK
@@ -40,8 +37,7 @@ namespace ContactbookLogicLibrary
                     mailAddressIsMailAddress = true;
                     mailAddress = input;
                 }
-                else
-                    Console.WriteLine("\nWARNING: Wrong Format. Correct Example: a@b.c\n");
+                //TODOL:  Wrong Format. Correct Example: a@b.c
             }
             return mailAddress;
         }
@@ -60,9 +56,7 @@ namespace ContactbookLogicLibrary
                     phoneNumber = value;
                     phoneNumberIsNumber = true;
                 }
-
-                else
-                    Console.WriteLine("\nWARNING: Only numbers are allowed.\n");
+                //TODOL: message Only numbers are allowed
             }
             return phoneNumber;
         }
@@ -82,7 +76,7 @@ namespace ContactbookLogicLibrary
                 }
                 else
                 {
-                    Console.WriteLine("\nWARNING: Only 'Male' and 'Female' gender is allowed at the moment.\n");
+                    //TODOL: message Only 'Male' and 'Female' gender is allowed at the moment
                 }
             }
             return gender;

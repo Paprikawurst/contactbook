@@ -6,7 +6,7 @@ using System.Data.SQLite;
 
 namespace ContactbookLogicLibrary
 {
-
+    //TODOH: refactoring hier und zusammenfassen von methoden
     //TODOH: separate Console-SQL from rest
     public class SQLConnection
     {
