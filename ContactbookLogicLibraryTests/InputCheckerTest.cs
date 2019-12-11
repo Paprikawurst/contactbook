@@ -7,12 +7,11 @@ namespace ContactbookLogicLibraryTests
     public class InputCheckerTest
     {
         [TestMethod]
-        //TODOL: write unittest
         public void NoEmptyInputCheckGetsInput()
         {
             //ARRANGE
             bool NoEmptyInput = false;
-            string testString = "12345";
+            string testString = "test";
 
             //ACT
             NoEmptyInput = InputChecker.NoEmptyInputCheck(testString);
@@ -24,31 +23,23 @@ namespace ContactbookLogicLibraryTests
         [TestMethod]
         public void NoEmptyInputCheckEmptyInput()
         {
-            //ARRANGE
             bool NoEmptyInput = false;
             string testString = "";
 
-            //ACT
             NoEmptyInput = InputChecker.NoEmptyInputCheck(testString);
 
-            //ASSERT
             Assert.IsFalse(NoEmptyInput);
         }
 
         [TestMethod]
         public void NoEmptyInputCheckNullInput()
         {
-            //ARRANGE
             bool NoEmptyInput = false;
             string testString = null;
 
-            //ACT
             NoEmptyInput = InputChecker.NoEmptyInputCheck(testString);
 
-            //ASSERT
             Assert.IsFalse(NoEmptyInput);
         }
-
-
     }
 }
