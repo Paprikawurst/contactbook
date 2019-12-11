@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactbookConsole", "Conta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactbookWPF", "ContactBookWPF\ContactbookWPF.csproj", "{58376CEA-0898-40F5-8D2E-9955248900BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactbookLogicLibraryTests", "ContactbookLogicLibraryTests\ContactbookLogicLibraryTests.csproj", "{B60EC650-EABA-4F95-84F6-DD3B52396847}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{58376CEA-0898-40F5-8D2E-9955248900BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58376CEA-0898-40F5-8D2E-9955248900BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58376CEA-0898-40F5-8D2E-9955248900BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B60EC650-EABA-4F95-84F6-DD3B52396847}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B60EC650-EABA-4F95-84F6-DD3B52396847}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B60EC650-EABA-4F95-84F6-DD3B52396847}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B60EC650-EABA-4F95-84F6-DD3B52396847}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

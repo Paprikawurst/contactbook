@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ContactData;
 
 namespace ContactbookLogicLibrary
 {
-    public class CsvReader
+    public class CsvReader //TODO: separate whole class console output from logic
     {
         public void ImportEntriesFromCsvIntoList(ContactBookLogic contactbooklogic, string csvFileName, SQLConnection sql)
         {

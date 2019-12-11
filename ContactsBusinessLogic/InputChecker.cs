@@ -2,7 +2,7 @@
 {
     public static class InputChecker
     {
-        //ADDRESS CHECK
+        //NO EMPTY INPUT CHECK
         public static bool NoEmptyInputCheck(string input)
         {
             bool InputNotEmpty = false;

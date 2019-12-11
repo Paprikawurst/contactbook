@@ -6,8 +6,7 @@ using System.Data.SQLite;
 
 namespace ContactbookLogicLibrary
 {
-    //TODOH: refactoring hier und zusammenfassen von methoden
-    //TODOH: separate Console-SQL from rest
+    //TODOH: separate Console-SQL from rest + refactoring hier und zusammenfassen von methoden
     public class SQLConnection
     {
         const string CONNECTION_STRING = "Data Source=C:\\Users\\nwolff\\Desktop\\git\\contactbook\\ContactbookConsole\\contactbookDB.db;";
@@ -75,7 +74,7 @@ namespace ContactbookLogicLibrary
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
             {
-                connection.Open();
+                connection.Open(); //TODO: separate console from logic
                 SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -100,7 +99,9 @@ namespace ContactbookLogicLibrary
                     long hasContactC = ExecuteScalarC(CommandText);
 
 
-                    if (hasContactC == 0)
+                    if (hasContactC == 0) //TODO: separate console from logic
+                                          // add to lists and new property(has contact) ? or
+                                          // try returning multiple things to just output in the console whether contact exists to a location or not
                     {
                         Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)}");
                     }
@@ -119,27 +120,31 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                while (reader.Read()) //TODO: separate console from logic
                 {
                     Console.WriteLine($"{reader.GetString(0)}");
                 }
             }
-        }
+        }//TODO: output sichtbar machen wo die methode aufgerufen wird
 
-        public void ShowCitiesOfLocations() // output all cities of locations
+        public List<string> ShowCitiesOfLocations() // output all cities of locations
         {
             string CommandText = "SELECT DISTINCT l.CityName FROM locations l";
+            List<string> citiesOfLocations = new List<string>();
 
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
             {
+
+
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                while (reader.Read()) //TODO: output sichtbar machen wo die methode aufgerufen wird
                 {
-                    Console.WriteLine($"{reader.GetString(0)}");
+                    citiesOfLocations.Add(reader.GetString(0));
                 }
             }
+            return citiesOfLocations;
         }
 
         public void ShowChosenCityOfContacts(string cityName) // output all cities of locations
@@ -152,7 +157,7 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                while (reader.Read()) // separate console from logic
                 {
                     Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)} {reader.GetString(6)}");
                 }
@@ -174,7 +179,7 @@ namespace ContactbookLogicLibrary
                     CommandText = $"SELECT COUNT(*) FROM locations l INNER JOIN contacts c ON l.LocationID = c.LocationID WHERE l.LocationID = {reader.GetInt32(0)}";
                     long hasContactC = ExecuteScalarC(CommandText);
 
-                    if (hasContactC == 0)
+                    if (hasContactC == 0) //TODO: separate console from logic
                     {
                         Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)}");
                     }
@@ -193,7 +198,7 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                while (reader.Read()) //TODO: separate console from logic 
                 {
                     Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)}");
                 }

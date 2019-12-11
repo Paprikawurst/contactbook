@@ -1,6 +1,5 @@
 ﻿using ContactbookLogicLibrary;
 using System;
-using System.IO;
 
 namespace ContactbookConsole
 {

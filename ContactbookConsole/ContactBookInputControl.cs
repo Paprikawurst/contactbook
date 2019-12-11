@@ -49,8 +49,11 @@ namespace ContactbookConsole
                 genderIsCorrectInput = InputChecker.GenderCheck(gender);
             }
 
-            contactbooklogic.AddContact(contactbooklogic, sql, countLocations, name, location, phoneNumber, mailAddress, gender);
-
+            bool conWasDupe = contactbooklogic.AddContact(contactbooklogic, sql, countLocations, name, location, phoneNumber, mailAddress, gender);
+            if(conWasDupe)
+            {
+                Console.WriteLine("INFO: Contact was a duplicate and has not been added to the database.");
+            }
         }
 
         //Add or Get Location Command

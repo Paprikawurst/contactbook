@@ -8,10 +8,9 @@ namespace ContactbookLogicLibrary
     {
 
         //TODOH: remove any console output (maybe use events?)
-        //----------------------------------------ADD CONTACT-----------------------------------------------------
-        public void AddContact(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations, string name, Location location, long phoneNumber, string mailAddress, string gender)
+        //ADD CONTACT METHOD
+        public bool AddContact(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations, string name, Location location, long phoneNumber, string mailAddress, string gender)
         {
-
             int LocationID = (int)sql.GetLocationID(location);
 
             Contact contact = new Contact
@@ -36,14 +35,13 @@ namespace ContactbookLogicLibrary
             {
                 var CommandText = $"INSERT INTO contacts(Name, LocationID, PhoneNumber, MailAddress, Gender) VALUES('{contact.Name}', '{LocationID}', '{contact.PhoneNumber}', '{contact.MailAddress}', '{contact.Gender}');";
                 sql.ExecuteNonQuery(CommandText);
-                //TODOL: info ob contact geaddet oder dupe war und nicht geaddet
             }
+            return conIsDupe;
         }
 
         //---------------------------------------ADD OR GET LOCATION-----------------------------------------------------------------------
         public Location AddOrGetLocation(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations, string address, string cityName)
         {
-
             Location location = new Location()
             {
                 Address = address,
