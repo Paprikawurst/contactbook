@@ -73,47 +73,58 @@ namespace ContactbookLogicLibrary
         //--------------------------------------------------EDIT------------------------------------------------------------------------
         public void EditContact(int inputindex, string c, SQLConnection sql)
         {
+
+            //TODOL: message successfully changed old to new for all 3 options
             var newvalue = "";
+            long newphoneno = 0;
             var CommandText = "";
+            bool InputIsNumber = false;
             bool CorrectInput = false;
             if (c == "1")
             {
-                Console.WriteLine($"Please enter the new value for the name.");
+                //GET NEW VALUE
+                while (!CorrectInput)
+                {
+                    Console.WriteLine($"Please enter the new value for the name.");
+                    newvalue = Console.ReadLine();
+                    CorrectInput = InputChecker.NoEmptyInputCheck(newvalue);
+                }
 
-                CommandText = $"SELECT Name FROM contacts WHERE ContactID = {inputindex};";
-                string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
-
-                newvalue = Console.ReadLine();
-                CorrectInput = InputChecker.NoEmptyInputCheck(newvalue);
+                //ASSIGN NEW VALUE
                 CommandText = $"UPDATE contacts SET Name = '{newvalue}' WHERE ContactID = {inputindex};";
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
             }
             else if (c == "2")
             {
-                Console.WriteLine($"Please enter the new value for the phonenumber.");
+                //GET NEW VALUE
+                while (!InputIsNumber)
+                {
+                    Console.WriteLine($"Please enter the new value for the phonenumber.");
+                    InputIsNumber = long.TryParse(Console.ReadLine(), out newphoneno);
+                    //CorrectInput = InputChecker.PhoneNumberCheck(newphoneno);
+                }
 
-                CommandText = $"SELECT PhoneNumber FROM contacts WHERE ContactID = {inputindex};";
-                int beforeEditValue = sql.GetBeforeEditValueInt(inputindex, CommandText);
-
-                var newphoneno = InputChecker.PhoneNumberCheck();
+                //ASSIGN NEW VALUE
                 CommandText = $"UPDATE contacts SET phoneNumber = '{newphoneno}' WHERE ContactID = {inputindex};";
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine($"\nPhonenumber successfully changed from {beforeEditValue} to {newphoneno}!\n");
+
             }
             else if (c == "3")
             {
-                Console.WriteLine($"Please enter the new value for the Mailaddress.");
+                //GET NEW VALUE
+                while (!CorrectInput)
+                {
+                    Console.WriteLine($"Please enter the new value for the Mailaddress.");
+                    newvalue = Console.ReadLine();
+                    CorrectInput = InputChecker.MailFormatCheck(newvalue);
+                }
 
-                CommandText = $"SELECT MailAddress FROM contacts WHERE ContactID = {inputindex};";
-                string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
-
-
-                newvalue = InputChecker.MailFormatCheck();
+                //ASSIGN NEW VALUE
                 CommandText = $"UPDATE contacts SET MailAddress = '{newvalue}' WHERE ContactID = {inputindex};";
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
             }
+
+
             //get contact where contactid = inputindex - edit it
             Contact contact = sql.OutputSingleContact(inputindex);
             //search through database and check if there is one with the same values - if yes delete it
@@ -126,13 +137,19 @@ namespace ContactbookLogicLibrary
                 sql.ExecuteNonQuery(CommandText);
                 Console.WriteLine($"\nWARNING: Contact with index: {inputindex} was a duplicate after editing and got removed.\n");
             }
+
+            //TODOL: show old and new value after edit
+            //GET OLD VALUE SAMPLE
+            //CommandText = $"SELECT Name FROM contacts WHERE ContactID = {inputindex};";
+            //string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
         }
 
         public void EditLocation(int inputindex, string c, SQLConnection sql)
         {
             var CommandText = "";
-            var newvalue = "";
+            var newValue = "";
             var beforeEditValue = "";
+            bool newValueIsCorrectInput = false;
 
             Location location = sql.OutputSingleLocation(inputindex);
             CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l WHERE l.LocationID = c.LocationID AND l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
@@ -147,8 +164,8 @@ namespace ContactbookLogicLibrary
                     CommandText = $"SELECT Address FROM locations WHERE LocationID = {inputindex};";
                     beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
 
-                    newvalue = InputChecker.NoEmptyInputCheck();
-                    CommandText = $"UPDATE locations SET Address = '{newvalue}' WHERE LocationID = {inputindex};";
+                    newValueIsCorrectInput = InputChecker.NoEmptyInputCheck(newValue);
+                    CommandText = $"UPDATE locations SET Address = '{newValue}' WHERE LocationID = {inputindex};";
                 }
                 else if (c == "2")
                 {
@@ -157,12 +174,12 @@ namespace ContactbookLogicLibrary
                     CommandText = $"SELECT CityName FROM locations WHERE LocationID = {inputindex};";
                     beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
 
-                    newvalue = InputChecker.NoEmptyInputCheck();
-                    CommandText = $"UPDATE locations SET CityName = '{newvalue}' WHERE LocationID = {inputindex};";
+                    newValueIsCorrectInput = InputChecker.NoEmptyInputCheck(newValue);
+                    CommandText = $"UPDATE locations SET CityName = '{newValue}' WHERE LocationID = {inputindex};";
                 }
 
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
+                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newValue}!\n");
                 CommandText = $"SELECT COUNT(*) FROM locations l WHERE l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
                 long dupecount = sql.ExecuteScalarC(CommandText);
 

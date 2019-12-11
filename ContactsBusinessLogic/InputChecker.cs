@@ -1,85 +1,42 @@
-﻿using System;
-
-namespace ContactbookLogicLibrary
+﻿namespace ContactbookLogicLibrary
 {
     public static class InputChecker
     {
-        // TODO: inputchecker für übergebenen string (true false? - erneute eingabe?) console.readline ablösen
-
         //ADDRESS CHECK
         public static bool NoEmptyInputCheck(string input)
         {
             bool InputNotEmpty = false;
 
-            while (!InputNotEmpty)
+            if (!string.IsNullOrWhiteSpace(input))
             {
-                if (!string.IsNullOrWhiteSpace(input))
-                {
-                    InputNotEmpty = true;
-                }
-                //TODOL: message input cannot be empty
+                InputNotEmpty = true;
             }
             return InputNotEmpty;
         }
 
         //MAILFORMAT CHECK
-        public static string MailFormatCheck()
+        public static bool MailFormatCheck(string input)
         {
-            var mailAddress = "";
             bool mailAddressIsMailAddress = false;
 
-            while (!mailAddressIsMailAddress)
+            if (input.Contains("@") && input.Contains(".") && (input.IndexOf("@") > 0) && (input.IndexOf("@") < input.IndexOf("."))
+                && input.IndexOf(".") > input.IndexOf("@") + 1 && (input.Length - 1 > input.IndexOf("."))) // Format muss a@b.c sein
             {
-                var input = Console.ReadLine();
-                if (input.Contains("@") && input.Contains(".") && (input.IndexOf("@") > 0) && (input.IndexOf("@") < input.IndexOf("."))
-                    && input.IndexOf(".") > input.IndexOf("@") + 1 && (input.Length - 1 > input.IndexOf("."))) // Format muss a@b.c sein
-                {
-                    mailAddressIsMailAddress = true;
-                    mailAddress = input;
-                }
-                //TODOL:  Wrong Format. Correct Example: a@b.c
+                mailAddressIsMailAddress = true;
             }
-            return mailAddress;
+            return mailAddressIsMailAddress;
         }
 
-        //PHONENUMBERCHECK
-        public static long PhoneNumberCheck()
-        {
-            long phoneNumber = 0;
-            bool phoneNumberIsNumber = false;
-            while (!phoneNumberIsNumber)
-            {
-                string check1 = Console.ReadLine();
 
-                if (long.TryParse(check1, out long value))
-                {
-                    phoneNumber = value;
-                    phoneNumberIsNumber = true;
-                }
-                //TODOL: message Only numbers are allowed
-            }
-            return phoneNumber;
-        }
-
-        public static string GenderCheck()
+        //GENDER CHECK
+        public static bool GenderCheck(string input)
         {
-            string gender = "";
             bool genderIsGender = false;
-            while (!genderIsGender)
-            {
-                string gender1 = Console.ReadLine();
 
-                if (gender1 == "Male" || gender1 == "Female")
-                {
-                    gender = gender1;
-                    genderIsGender = true;
-                }
-                else
-                {
-                    //TODOL: message Only 'Male' and 'Female' gender is allowed at the moment
-                }
-            }
-            return gender;
+            if (input == "Male" || input == "Female")
+                genderIsGender = true;
+
+            return genderIsGender;
         }
 
         //CSV EMPTY INPUT CHECK

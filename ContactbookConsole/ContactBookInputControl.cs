@@ -10,19 +10,44 @@ namespace ContactbookConsole
         // Add Contact Command
         public static void AddContactCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations)
         {
-            Console.WriteLine("\nPlease enter the Name of the new Contact.");
-            var name = InputChecker.NoEmptyInputCheck();
+            bool nameIsCorrectInput = false;
+            bool inputIsNumber = false;
+            bool mailAddressIsCorrectInput = false;
+            bool genderIsCorrectInput = false;
+            var name = "";
+            var mailAddress = "";
+            long phoneNumber = 0;
+            var gender = "";
+
+
+            while (!nameIsCorrectInput)
+            {
+                Console.WriteLine("\nPlease enter the Name of the new Contact.");
+                name = Console.ReadLine();
+                nameIsCorrectInput = InputChecker.NoEmptyInputCheck(name);
+            }
 
             Location location = AddOrGetLocationCommand(contactbooklogic, sql, countLocations);
 
-            Console.WriteLine("\nPlease enter the phone number for the new Contact");
-            long phoneNumber = InputChecker.PhoneNumberCheck();
+            while (!inputIsNumber)
+            {
+                Console.WriteLine("\nPlease enter the phone number for the new Contact");
+                inputIsNumber = long.TryParse(Console.ReadLine(), out phoneNumber);
+            }
 
-            Console.WriteLine("\nPlease enter a mailaddress for the new Contact");
-            var mailAddress = InputChecker.MailFormatCheck();
+            while (!mailAddressIsCorrectInput)
+            {
+                Console.WriteLine("\nPlease enter a mailaddress for the new Contact");
+                mailAddress = Console.ReadLine();
+                mailAddressIsCorrectInput = InputChecker.MailFormatCheck(mailAddress);
+            }
 
-            Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
-            var gender = InputChecker.GenderCheck();
+            while (!genderIsCorrectInput)
+            {
+                Console.WriteLine("\nPlease enter the gender for the new Contact ('Male' or 'Female')");
+                gender = Console.ReadLine();
+                genderIsCorrectInput = InputChecker.GenderCheck(gender);
+            }
 
             contactbooklogic.AddContact(contactbooklogic, sql, countLocations, name, location, phoneNumber, mailAddress, gender);
 
@@ -31,13 +56,27 @@ namespace ContactbookConsole
         //Add or Get Location Command
         public static Location AddOrGetLocationCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations)
         {
-            Console.WriteLine("\nPlease enter the address of the new contact.");
-            var address = InputChecker.NoEmptyInputCheck();
+            bool addressIsCorrectInput = false;
+            bool cityNameIsCorrectInput = false;
+            var address = "";
+            var cityName = "";
 
-            Console.WriteLine("\nPlease enter the cityname of the new contact");
-            var cityName = InputChecker.NoEmptyInputCheck();
+            while (!addressIsCorrectInput)
+            {
+                Console.WriteLine("\nPlease enter the address of the new contact.");
+                address = Console.ReadLine();
+                addressIsCorrectInput = InputChecker.NoEmptyInputCheck(address);
+            }
+
+            while (!cityNameIsCorrectInput)
+            {
+                Console.WriteLine("\nPlease enter the cityname of the new contact.");
+                cityName = Console.ReadLine();
+                cityNameIsCorrectInput = InputChecker.NoEmptyInputCheck(cityName);
+            }
 
             Location location = contactbooklogic.AddOrGetLocation(contactbooklogic, sql, countLocations, address, cityName);
+
             return location;
         }
 
@@ -47,49 +86,51 @@ namespace ContactbookConsole
             Console.WriteLine("\nPlease enter the index of the contact you wish to edit.");
             sql.ReadContactsTable();
 
-            bool z = int.TryParse(Console.ReadLine(), out int inputindex);
-            if (z && inputindex <= countContacts && inputindex > 0)
+            bool correctIndex = int.TryParse(Console.ReadLine(), out int inputindex);
+            if (correctIndex && inputindex <= countContacts && inputindex > 0)
             {
-                var newvalue = "";
+                var newValue = "";
+                bool newValueIsCorrectInput = false;
                 var CommandText = "";
+                bool inputIsNumber = false;
+                long phoneNumber = 0;
+
                 Console.WriteLine("\nPlease enter the number of what you want to edit.\n1. Name\n2. PhoneNumber\n3. MailAddress");
                 var c = Console.ReadLine();
                 if (c == "1")
                 {
-                    Console.WriteLine($"Please enter the new value for the name.");
+                    while (!newValueIsCorrectInput)
+                    {
+                        Console.WriteLine($"Please enter the new value for the name.");
+                        var name = Console.ReadLine();
+                        newValueIsCorrectInput = InputChecker.NoEmptyInputCheck(newValue);
+                    }
 
-                    CommandText = $"SELECT Name FROM contacts WHERE ContactID = {inputindex};";
-                    string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
-
-                    newvalue = InputChecker.NoEmptyInputCheck();
-                    CommandText = $"UPDATE contacts SET Name = '{newvalue}' WHERE ContactID = {inputindex};";
+                    CommandText = $"UPDATE contacts SET Name = '{newValue}' WHERE ContactID = {inputindex};";
                     sql.ExecuteNonQuery(CommandText);
-                    Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
                 }
                 else if (c == "2")
                 {
-                    Console.WriteLine($"Please enter the new value for the phonenumber.");
+                    while (!inputIsNumber)
+                    {
+                        Console.WriteLine("\nPlease enter the phone number for the new Contact");
+                        inputIsNumber = long.TryParse(Console.ReadLine(), out phoneNumber);
+                    }
 
-                    CommandText = $"SELECT PhoneNumber FROM contacts WHERE ContactID = {inputindex};";
-                    int beforeEditValue = sql.GetBeforeEditValueInt(inputindex, CommandText);
-
-                    var newphoneno = InputChecker.PhoneNumberCheck();
-                    CommandText = $"UPDATE contacts SET phoneNumber = '{newphoneno}' WHERE ContactID = {inputindex};";
+                    CommandText = $"UPDATE contacts SET phoneNumber = '{phoneNumber}' WHERE ContactID = {inputindex};";
                     sql.ExecuteNonQuery(CommandText);
-                    Console.WriteLine($"\nPhonenumber successfully changed from {beforeEditValue} to {newphoneno}!\n");
                 }
                 else if (c == "3")
                 {
-                    Console.WriteLine($"Please enter the new value for the Mailaddress.");
+                    while (!newValueIsCorrectInput)
+                    {
+                        Console.WriteLine($"Please enter the new value for the Mailaddress.");
+                        var mailAddress = Console.ReadLine();
+                        newValueIsCorrectInput = InputChecker.MailFormatCheck(mailAddress);
+                    }
 
-                    CommandText = $"SELECT MailAddress FROM contacts WHERE ContactID = {inputindex};";
-                    string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
-
-
-                    newvalue = InputChecker.MailFormatCheck();
-                    CommandText = $"UPDATE contacts SET MailAddress = '{newvalue}' WHERE ContactID = {inputindex};";
+                    CommandText = $"UPDATE contacts SET MailAddress = '{newValue}' WHERE ContactID = {inputindex};";
                     sql.ExecuteNonQuery(CommandText);
-                    Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newvalue}!\n");
                 }
                 else
                     Console.WriteLine("WARNING: Invalid Input.");
