@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactbookWPF", "ContactBo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContactbookLogicLibraryTests", "ContactbookLogicLibraryTests\ContactbookLogicLibraryTests.csproj", "{B60EC650-EABA-4F95-84F6-DD3B52396847}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ContactbookTests", "ContactbookTests", "{4DA1D21A-2314-4376-A241-2186E495AAF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Contactbook", "Contactbook", "{5C7F5187-EE9F-4365-B2D1-9FC6AB9C8B31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +40,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{00AB417E-DD65-4425-BF9B-155871199CE2} = {5C7F5187-EE9F-4365-B2D1-9FC6AB9C8B31}
+		{375A017C-EE76-4EFD-9D86-D420F73E5F6D} = {5C7F5187-EE9F-4365-B2D1-9FC6AB9C8B31}
+		{58376CEA-0898-40F5-8D2E-9955248900BB} = {5C7F5187-EE9F-4365-B2D1-9FC6AB9C8B31}
+		{B60EC650-EABA-4F95-84F6-DD3B52396847} = {4DA1D21A-2314-4376-A241-2186E495AAF3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {39AD611F-38E7-4EB7-9647-F066E0384078}
