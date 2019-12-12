@@ -226,6 +226,7 @@ namespace ContactbookLogicLibrary
                 return count;
             }
         }
+
         public string GetBeforeEditValueString(int inputindex, string CommandText1)
         {
             string beforeEditValue = "";
@@ -266,7 +267,6 @@ namespace ContactbookLogicLibrary
             return beforeEditValue;
         }
 
-
         public List<Location> OutputLocationTableToList()
         {
             var locationlist = new List<Location>();
@@ -293,7 +293,6 @@ namespace ContactbookLogicLibrary
                     }
                 }
             }
-
             return locationlist;
         }
 

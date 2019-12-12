@@ -19,10 +19,13 @@
         {
             bool mailAddressIsMailAddress = false;
 
-            if (input.Contains("@") && input.Contains(".") && (input.IndexOf("@") > 0) && (input.IndexOf("@") < input.IndexOf("."))
-                && input.IndexOf(".") > input.IndexOf("@") + 1 && (input.Length - 1 > input.IndexOf("."))) // Format muss a@b.c sein
+            if (!string.IsNullOrEmpty(input))
             {
-                mailAddressIsMailAddress = true;
+                if (input.Contains("@") && input.Contains(".") && (input.IndexOf("@") > 0) && (input.IndexOf("@") < input.IndexOf("."))
+                    && input.IndexOf(".") > input.IndexOf("@") + 1 && (input.Length - 1 > input.IndexOf("."))) // Format muss a@b.c sein
+                {
+                    mailAddressIsMailAddress = true;
+                }
             }
             return mailAddressIsMailAddress;
         }
