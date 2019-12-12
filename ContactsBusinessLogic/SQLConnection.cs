@@ -22,7 +22,7 @@ namespace ContactbookLogicLibrary
             }
         }
 
-        public long ExecuteScalarC(string CommandText)
+        public long ExecuteScalar(string CommandText)
         {
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
@@ -39,19 +39,6 @@ namespace ContactbookLogicLibrary
                     return (long)x;
             }
         }
-
-        public long ExecuteScalar(string CommandText)
-        {
-            using (var connection = new SQLiteConnection(CONNECTION_STRING))
-            using (var cmd = new SQLiteCommand(CommandText, connection))
-            {
-                connection.Open();
-                cmd.CommandText = $"{CommandText}";
-                var x = (long)cmd.ExecuteScalar();
-                return x;
-            }
-        }
-
 
         public long GetTableRowCount(string CountFrom)
         {
@@ -75,7 +62,7 @@ namespace ContactbookLogicLibrary
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
             {
-                connection.Open(); //TODOH: separate console from logic
+                connection.Open(); //TODOH: output whole reader data somehow in list maybe and return
                 SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -84,15 +71,17 @@ namespace ContactbookLogicLibrary
                         ContactID = reader.GetInt32(0),
 
                     };
+                    
                     //contactsList.Add(Contact)
                     Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)} {reader.GetString(6)}");
                 }
             }
         }
 
-        public void ReadLocationsTable() // output all locations
+        public List<Location> ReadLocationsTable() // output all locations
         {
             string CommandText = "SELECT l.LocationID, l.Address, l.CityName FROM locations l";
+            List<Location> locationsList = new List<Location>();
 
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
@@ -101,21 +90,37 @@ namespace ContactbookLogicLibrary
                 SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    //select COUNT(*) FROM locations l INNER JOIN contacts c ON l.LocationID = c.LocationID WHERE l.LocationID = {reader.GetInt32(0)}
                     CommandText = $"SELECT COUNT(*) FROM locations l INNER JOIN contacts c ON l.LocationID = c.LocationID WHERE l.LocationID = {reader.GetInt32(0)}";
-                    long hasContactC = ExecuteScalarC(CommandText);
+                    long hasContactC = ExecuteScalar(CommandText);
 
 
-                    if (hasContactC == 0) //TODOH: separate console from logic
-                                          // add to lists and new property(has contact) ? or
-                                          // try returning multiple things to just output in the console whether contact exists to a location or not
+                    if (hasContactC == 0) //TODO: repair output
                     {
-                        Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)}");
+                        Location location = new Location
+                        {
+                            LocationID = reader.GetInt32(0),
+                            Address = reader.GetString(1),
+                            CityName = reader.GetString(2),
+                            HasContact = false
+                        };
+
+                        locationsList.Add(location);
                     }
                     else
-                        Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} - has contact");
+                    {
+                        Location location = new Location
+                        {
+                            LocationID = reader.GetInt32(0),
+                            Address = reader.GetString(1),
+                            CityName = reader.GetString(2),
+                            HasContact = true
+                        };
+
+                        locationsList.Add(location);
+                    }
                 }
             }
+            return locationsList;
         }
 
         public List<string> ShowCitiesOfContacts() // output all cities of contacts
@@ -128,7 +133,7 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODOH: separate console from logic
+                while (reader.Read()) //TODOH: repair output
                 {
                     cityList.Add(reader.GetString(0));
                 }
@@ -166,7 +171,7 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) // TODOH: separate console from logic
+                while (reader.Read()) // TODOH: separate console from logic in list and return somehow
                 {
                     Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)} {reader.GetString(6)}");
                 }
@@ -186,9 +191,9 @@ namespace ContactbookLogicLibrary
                 {
 
                     CommandText = $"SELECT COUNT(*) FROM locations l INNER JOIN contacts c ON l.LocationID = c.LocationID WHERE l.LocationID = {reader.GetInt32(0)}";
-                    long hasContactC = ExecuteScalarC(CommandText);
+                    long hasContactC = ExecuteScalar(CommandText);
 
-                    if (hasContactC == 0) //TODOH: separate console from logic
+                    if (hasContactC == 0) //TODOH: separate console from logic - how does this work [count(*) checken]
                     {
                         Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)}");
                     }
@@ -201,14 +206,19 @@ namespace ContactbookLogicLibrary
         public void ShowGenderSpecificList(string gender)
         {
             string CommandText = $"SELECT c.ContactID, c.Name, l.Address, l.CityName, c.PhoneNumber, c.MailAddress FROM contacts c INNER JOIN locations l ON l.LocationID = c.LocationID AND c.Gender = '{gender}';";
+            List<Contact> genderList = new List<Contact>();
 
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODOH: separate console from logic list output
+                while (reader.Read()) //TODOH: separate console from logic list output - somehow in list and return
                 {
+                    Contact contact = new Contact
+                    {
+
+                    };
                     Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)}");
                 }
             }

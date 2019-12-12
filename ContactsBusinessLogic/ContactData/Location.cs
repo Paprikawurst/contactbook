@@ -18,5 +18,10 @@
             get;
             set;
         }
+        public bool HasContact
+        {
+            get;
+            set;
+        }
     }
 }

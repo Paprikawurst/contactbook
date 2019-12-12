@@ -5,7 +5,7 @@ using ContactData;
 
 namespace ContactbookLogicLibrary
 {
-    public class CsvReader //TODOH: separate whole csvreader class console output from logic
+    public class CsvReader
     {
         public void ImportEntriesFromCsvIntoList(ContactBookLogic contactbooklogic, string csvFileName, SQLConnection sql)
         {

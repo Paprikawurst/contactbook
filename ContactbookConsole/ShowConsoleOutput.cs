@@ -1,11 +1,13 @@
 ﻿using ContactbookLogicLibrary;
+using ContactData;
 using System;
+using System.Collections.Generic;
 
 namespace ContactbookConsole
 {
     public class ShowConsoleOutput
     {
-        //TODOH: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist
+        //TODOH: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist - überall
         public void ListWanted(ContactBookLogic contactbooklogic, SQLConnection sql, long countContacts, long countLocations)
         {
             Console.WriteLine("\nDo you want a list of 1. only contacts, 2. only locations or 3. both?\nType 1, 2 or 3\n");
@@ -42,6 +44,8 @@ namespace ContactbookConsole
         //only contacts
         public void ShowContacts(ContactBookLogic contactbooklogic, SQLConnection sql)
         {
+            List<string> tempList = new List<string>();
+
             Console.WriteLine("\nWhat List of contacts do you want to display?\n1. All contacts\n2. All contacts of a specific city\n3. All cities\n4. All male contacts\n5. All female contacts\nType 1, 2 or 3\n");
             var check = Console.ReadLine();
 
@@ -55,11 +59,11 @@ namespace ContactbookConsole
             {
                 Console.WriteLine("");
                 Console.WriteLine("\nWhich city do you want to display the contacts from?\nPossible cities are:\n");
-                sql.ShowCitiesOfContacts();
+                tempList = sql.ShowCitiesOfContacts();
                 Console.WriteLine("");
                 var chosenCity = Console.ReadLine();
                 var CommandText = $"SELECT * FROM locations l INNER JOIN contacts c ON c.LocationID = l.LocationID WHERE l.CityName = '{chosenCity}';";
-                long count = sql.ExecuteScalarC(CommandText);
+                long count = sql.ExecuteScalar(CommandText);
 
                 if (count > 0)
                 {
@@ -75,7 +79,7 @@ namespace ContactbookConsole
             else if (check == "3")
             {
                 Console.WriteLine("\nCities with contacts:\n");
-                sql.ShowCitiesOfContacts();
+                tempList = sql.ShowCitiesOfContacts();
             }
             else if (check == "4")
             {
@@ -113,7 +117,7 @@ namespace ContactbookConsole
                 var chosenCity = Console.ReadLine();
 
                 var CommandText = $"SELECT * FROM Locations l WHERE l.CityName = '{chosenCity}';";
-                long count = sql.ExecuteScalarC(CommandText);
+                long count = sql.ExecuteScalar(CommandText);
 
                 if (count > 0)
                 {
@@ -137,6 +141,7 @@ namespace ContactbookConsole
         //contacts and locations
         public void ShowBoth(ContactBookLogic contactbooklogic, SQLConnection sql)
         {
+            List<Contact> tempList = new List<Contact>();
             Console.WriteLine("\nWhat List do you want to display?\n1. All Contacts and Locations\n2. All contacts and locations of a specific city\n3. All cities\nType 1, 2 or 3\n");
             var check = Console.ReadLine();
 
@@ -163,7 +168,7 @@ namespace ContactbookConsole
                 var chosenCity = Console.ReadLine();
 
                 var CommandText = $"SELECT * FROM Locations l WHERE l.CityName = '{chosenCity}';";
-                long count = sql.ExecuteScalarC(CommandText);
+                long count = sql.ExecuteScalar(CommandText);
 
                 if (count > 0)
                 {

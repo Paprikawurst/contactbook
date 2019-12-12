@@ -93,7 +93,7 @@ namespace ContactbookLogicLibrary
 
             Contact contact = sql.OutputSingleContact(inputindex);
             CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l ON c.LocationID = l.LocationID WHERE c.Name = '{contact.Name}' AND c.PhoneNumber = {contact.PhoneNumber} AND c.LocationID = {contact.LocationID} AND c.MailAddress = '{contact.MailAddress}' AND c.Gender = '{contact.Gender}' ";
-            long dupecount = sql.ExecuteScalarC(CommandText);
+            long dupecount = sql.ExecuteScalar(CommandText);
 
             if (dupecount >= 2)
             {
@@ -116,7 +116,7 @@ namespace ContactbookLogicLibrary
 
             Location location = sql.OutputSingleLocation(inputindex);
             CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l WHERE l.LocationID = c.LocationID AND l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
-            long locHasConCount = sql.ExecuteScalarC(CommandText);
+            long locHasConCount = sql.ExecuteScalar(CommandText);
 
             if (locHasConCount == 0)
             {
@@ -140,7 +140,7 @@ namespace ContactbookLogicLibrary
                 sql.ExecuteNonQuery(CommandText);
                 //TODOL: message Contactname successfully changed from {beforeEditValue} to {newValue}!
                 CommandText = $"SELECT COUNT(*) FROM locations l WHERE l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
-                long dupecount = sql.ExecuteScalarC(CommandText);
+                long dupecount = sql.ExecuteScalar(CommandText);
 
                 if (dupecount >= 2)
                 {
@@ -178,7 +178,7 @@ namespace ContactbookLogicLibrary
             long count = sql.ExecuteScalar(CommandText);
 
             CommandText = $"SELECT * FROM locations WHERE LocationID = {value}";
-            long c = sql.ExecuteScalarC(CommandText);
+            long c = sql.ExecuteScalar(CommandText);
             if (count == 0 && c > 0)
             {
                 CommandText = $"DELETE FROM locations WHERE LocationID = {value};";
