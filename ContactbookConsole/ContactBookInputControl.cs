@@ -50,7 +50,7 @@ namespace ContactbookConsole
             }
 
             bool conWasDupe = contactbooklogic.AddContact(contactbooklogic, sql, countLocations, name, location, phoneNumber, mailAddress, gender);
-            if(conWasDupe)
+            if (conWasDupe)
             {
                 Console.WriteLine("INFO: Contact was a duplicate and has not been added to the database.");
             }
@@ -156,7 +156,19 @@ namespace ContactbookConsole
                 Console.WriteLine("Please enter the number of what you want to edit.\n1. Address\n2. City\n");
                 var c = Console.ReadLine();
                 if (c == "1" || c == "2")
-                    contactbooklogic.EditLocation(inputindex, c, sql);
+                {
+                    if (c == "1")
+                    {
+                        Console.WriteLine($"Please enter the new value for the address.");
+                    }
+                    else if (c == "2")
+                    {
+                        Console.WriteLine($"Please enter the new value for the cityname.");
+                    }
+                    var newvalue = Console.ReadLine(); //TODO: check ob richtiger input statt console.readline
+                    contactbooklogic.EditLocation(inputindex, c, sql, newvalue);
+                }
+
                 else
                     Console.WriteLine("WARNING: Invalid Input.");
             }

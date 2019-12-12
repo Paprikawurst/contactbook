@@ -2,6 +2,12 @@
 {
     public class Contact
     {
+        public int ContactID
+        {
+            get;
+            set;
+        }
+
         public string Name
         {
             get;

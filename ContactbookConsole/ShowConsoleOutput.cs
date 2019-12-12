@@ -5,7 +5,7 @@ namespace ContactbookConsole
 {
     public class ShowConsoleOutput
     {
-        //TODO: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist
+        //TODOH: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist
         public void ListWanted(ContactBookLogic contactbooklogic, SQLConnection sql, long countContacts, long countLocations)
         {
             Console.WriteLine("\nDo you want a list of 1. only contacts, 2. only locations or 3. both?\nType 1, 2 or 3\n");

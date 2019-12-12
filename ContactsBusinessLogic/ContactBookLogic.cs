@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ContactData;
 
 namespace ContactbookLogicLibrary
@@ -7,7 +6,7 @@ namespace ContactbookLogicLibrary
     public class ContactBookLogic
     {
 
-        //TODOH: remove any console output (maybe use events?)
+        //TODO: confirmation messages etc. (maybe use events, tuples with boolean return value or premethods which check input)
         //ADD CONTACT METHOD
         public bool AddContact(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations, string name, Location location, long phoneNumber, string mailAddress, string gender)
         {
@@ -69,71 +68,38 @@ namespace ContactbookLogicLibrary
         }
 
         //--------------------------------------------------EDIT------------------------------------------------------------------------
-        public void EditContact(int inputindex, string c, SQLConnection sql)
+        public void EditContact(int inputindex, string c, SQLConnection sql, string newValue)
         {
 
-            //TODOL: message successfully changed old to new for all 3 options
-            var newvalue = "";
-            long newphoneno = 0;
+            //TODOL: message successfully changed old to new for all 3 options on correct position
+            bool newValueIsNumber = long.TryParse(newValue, out long newphoneno); //TODOL: this does not work if name is int
             var CommandText = "";
-            bool InputIsNumber = false;
-            bool CorrectInput = false;
             if (c == "1")
             {
-                //GET NEW VALUE
-                while (!CorrectInput)
-                {
-                    Console.WriteLine($"Please enter the new value for the name.");
-                    newvalue = Console.ReadLine();
-                    CorrectInput = InputChecker.NoEmptyInputCheck(newvalue);
-                }
-
-                //ASSIGN NEW VALUE
-                CommandText = $"UPDATE contacts SET Name = '{newvalue}' WHERE ContactID = {inputindex};";
+                CommandText = $"UPDATE contacts SET Name = '{newValue}' WHERE ContactID = {inputindex};";
                 sql.ExecuteNonQuery(CommandText);
             }
             else if (c == "2")
             {
-                //GET NEW VALUE
-                while (!InputIsNumber)
-                {
-                    Console.WriteLine($"Please enter the new value for the phonenumber.");
-                    InputIsNumber = long.TryParse(Console.ReadLine(), out newphoneno);
-                    //CorrectInput = InputChecker.PhoneNumberCheck(newphoneno);
-                }
-
-                //ASSIGN NEW VALUE
                 CommandText = $"UPDATE contacts SET phoneNumber = '{newphoneno}' WHERE ContactID = {inputindex};";
-                sql.ExecuteNonQuery(CommandText);
+                sql.ExecuteNonQuery(CommandText); 
 
             }
             else if (c == "3")
             {
-                //GET NEW VALUE
-                while (!CorrectInput)
-                {
-                    Console.WriteLine($"Please enter the new value for the Mailaddress.");
-                    newvalue = Console.ReadLine();
-                    CorrectInput = InputChecker.MailFormatCheck(newvalue);
-                }
-
-                //ASSIGN NEW VALUE
-                CommandText = $"UPDATE contacts SET MailAddress = '{newvalue}' WHERE ContactID = {inputindex};";
+                CommandText = $"UPDATE contacts SET MailAddress = '{newValue}' WHERE ContactID = {inputindex};";
                 sql.ExecuteNonQuery(CommandText);
             }
 
-
-            //get contact where contactid = inputindex - edit it
             Contact contact = sql.OutputSingleContact(inputindex);
-            //search through database and check if there is one with the same values - if yes delete it
             CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l ON c.LocationID = l.LocationID WHERE c.Name = '{contact.Name}' AND c.PhoneNumber = {contact.PhoneNumber} AND c.LocationID = {contact.LocationID} AND c.MailAddress = '{contact.MailAddress}' AND c.Gender = '{contact.Gender}' ";
             long dupecount = sql.ExecuteScalarC(CommandText);
 
-            if (dupecount >= 2) // there should always be a maximum of 2 
+            if (dupecount >= 2)
             {
                 CommandText = $"DELETE FROM contacts WHERE ContactID = '{inputindex}';";
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine($"\nWARNING: Contact with index: {inputindex} was a duplicate after editing and got removed.\n");
+             //TODOL: message Contact with index: {inputindex} was a duplicate after editing and got removed.
             }
 
             //TODOL: show old and new value after edit
@@ -142,10 +108,9 @@ namespace ContactbookLogicLibrary
             //string beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
         }
 
-        public void EditLocation(int inputindex, string c, SQLConnection sql)
+        public void EditLocation(int inputindex, string c, SQLConnection sql, string newValue)
         {
             var CommandText = "";
-            var newValue = "";
             var beforeEditValue = "";
             bool newValueIsCorrectInput = false;
 
@@ -157,8 +122,6 @@ namespace ContactbookLogicLibrary
             {
                 if (c == "1")
                 {
-                    Console.WriteLine($"Please enter the new value for the address.");
-
                     CommandText = $"SELECT Address FROM locations WHERE LocationID = {inputindex};";
                     beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
 
@@ -167,8 +130,6 @@ namespace ContactbookLogicLibrary
                 }
                 else if (c == "2")
                 {
-                    Console.WriteLine($"Please enter the new value for the cityname.");
-
                     CommandText = $"SELECT CityName FROM locations WHERE LocationID = {inputindex};";
                     beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
 
@@ -177,19 +138,18 @@ namespace ContactbookLogicLibrary
                 }
 
                 sql.ExecuteNonQuery(CommandText);
-                Console.WriteLine($"\nContactname successfully changed from {beforeEditValue} to {newValue}!\n");
+                //TODOL: message Contactname successfully changed from {beforeEditValue} to {newValue}!
                 CommandText = $"SELECT COUNT(*) FROM locations l WHERE l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
                 long dupecount = sql.ExecuteScalarC(CommandText);
 
-                if (dupecount >= 2) // there should never be more than 2 at any time
+                if (dupecount >= 2)
                 {
                     CommandText = $"DELETE FROM locations WHERE LocationID = '{inputindex}';";
                     sql.ExecuteNonQuery(CommandText);
-                    Console.WriteLine($"\nWARNING: Location with index: {inputindex} was a duplicate after editing and got removed.\n");
+                    //TODOL: message Location with index: {inputindex} was a duplicate after editing and got removed.
                 }
             }
-            else
-                Console.WriteLine("WARNING: You can't edit a location that is linked to an existing contact");
+                //TODOL: message WARNING: You can't edit a location that is linked to an existing contact
         }
 
         //----------------------------------------MERGE----------------------------------------------------------------------------------
@@ -198,7 +158,7 @@ namespace ContactbookLogicLibrary
         {
             var CommandText = $"UPDATE contacts SET LocationID = (SELECT LocationID FROM contacts WHERE ContactID = {temp1}) WHERE ContactID = {temp2};";
             sql.ExecuteNonQuery(CommandText);
-            Console.WriteLine("Contact's address and city successfully merged.\n");
+            //TODOL: message Contact's address and city successfully merged.
         }
 
         //----------------------------------------REMOVE METHOD------------------------------------------------------------------------------
@@ -208,8 +168,7 @@ namespace ContactbookLogicLibrary
   
                 var CommandText = $"DELETE FROM contacts WHERE ContactID = '{value}';";
                 sql.ExecuteNonQuery(CommandText);
-                //TODOL: contact successfully deleted message
-            //TODOL: invalid input message
+                //TODOL: contact successfully deleted message + invalid input message
         }
 
         public void RemoveLocation(ContactBookLogic contactbooklogic, long countLocation, SQLConnection sql, int value)
@@ -226,7 +185,7 @@ namespace ContactbookLogicLibrary
                 sql.ExecuteNonQuery(CommandText);
                 //TODOL: location successfully deleted message
             }
-            //TODOL: else 1. no location with index value found 2. you can not delete location that is associated to a contact 3. invalid input
+            //TODOL: all messages for : alternatives else 1. no location with index value found 2. you can not delete location that is associated to a contact 3. invalid input
         }
 
         public void RemoveEverything(SQLConnection sql)

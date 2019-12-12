@@ -70,14 +70,21 @@ namespace ContactbookLogicLibrary
         public void ReadContactsTable() // output all contacts with their locations
         {
             string CommandText = "SELECT c.ContactID, c.Name, l.Address, l.CityName, c.PhoneNumber, c.MailAddress, c.Gender FROM contacts c INNER JOIN locations l ON l.LocationID = c.LocationID;";
+            List<Contact> contactsList = new List<Contact>();
 
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
             {
-                connection.Open(); //TODO: separate console from logic
+                connection.Open(); //TODOH: separate console from logic
                 SQLiteDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
+                    Contact contact = new Contact
+                    {
+                        ContactID = reader.GetInt32(0),
+
+                    };
+                    //contactsList.Add(Contact)
                     Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)} {reader.GetString(6)}");
                 }
             }
@@ -99,7 +106,7 @@ namespace ContactbookLogicLibrary
                     long hasContactC = ExecuteScalarC(CommandText);
 
 
-                    if (hasContactC == 0) //TODO: separate console from logic
+                    if (hasContactC == 0) //TODOH: separate console from logic
                                           // add to lists and new property(has contact) ? or
                                           // try returning multiple things to just output in the console whether contact exists to a location or not
                     {
@@ -111,21 +118,23 @@ namespace ContactbookLogicLibrary
             }
         }
 
-        public void ShowCitiesOfContacts() // output all cities of contacts
+        public List<string> ShowCitiesOfContacts() // output all cities of contacts
         {
             string CommandText = "SELECT DISTINCT l.CityName FROM contacts c INNER JOIN locations l ON c.LocationID = l.LocationID";
+            List<string> cityList = new List<string>();
 
             using (var connection = new SQLiteConnection(CONNECTION_STRING))
             using (var cmd = new SQLiteCommand(CommandText, connection))
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODO: separate console from logic
+                while (reader.Read()) //TODOH: separate console from logic
                 {
-                    Console.WriteLine($"{reader.GetString(0)}");
+                    cityList.Add(reader.GetString(0));
                 }
             }
-        }//TODO: output sichtbar machen wo die methode aufgerufen wird
+            return cityList;
+        }//TODOH: output sichtbar machen wo die methode aufgerufen wird
 
         public List<string> ShowCitiesOfLocations() // output all cities of locations
         {
@@ -139,7 +148,7 @@ namespace ContactbookLogicLibrary
 
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODO: output sichtbar machen wo die methode aufgerufen wird
+                while (reader.Read()) //TODOH: output sichtbar machen wo die methode aufgerufen wird
                 {
                     citiesOfLocations.Add(reader.GetString(0));
                 }
@@ -157,7 +166,7 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) // separate console from logic
+                while (reader.Read()) // TODOH: separate console from logic
                 {
                     Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)} {reader.GetString(6)}");
                 }
@@ -179,7 +188,7 @@ namespace ContactbookLogicLibrary
                     CommandText = $"SELECT COUNT(*) FROM locations l INNER JOIN contacts c ON l.LocationID = c.LocationID WHERE l.LocationID = {reader.GetInt32(0)}";
                     long hasContactC = ExecuteScalarC(CommandText);
 
-                    if (hasContactC == 0) //TODO: separate console from logic
+                    if (hasContactC == 0) //TODOH: separate console from logic
                     {
                         Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)}");
                     }
@@ -198,7 +207,7 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODO: separate console from logic 
+                while (reader.Read()) //TODOH: separate console from logic list output
                 {
                     Console.WriteLine($" {reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)} {reader.GetString(3)} {reader.GetInt32(4)} {reader.GetString(5)}");
                 }

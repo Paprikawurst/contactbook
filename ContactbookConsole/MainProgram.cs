@@ -7,9 +7,10 @@ namespace ContactbookConsole
     {
         static void Main()
         {
-            //TODO: Refactoring komplett
+            //TODOL: Refactoring komplett
             //TODO: Trennung von Input und Logik für WPF
-            //TODO: csv path anpassen + generic?
+            //TODOL: csv path anpassen + generic?
+            //TODO: List 2.2 2.3 3.2 3.3 - Import - Edit - general check again
 
             ShowConsoleOutput showList = new ShowConsoleOutput();
             ContactBookLogic contactbooklogic = new ContactBookLogic();
