@@ -111,30 +111,22 @@ namespace ContactbookLogicLibrary
         public void EditLocation(int inputindex, string c, SQLConnection sql, string newValue)
         {
             var CommandText = "";
-            var beforeEditValue = "";
-            bool newValueIsCorrectInput = false;
 
             Location location = sql.OutputSingleLocation(inputindex);
             CommandText = $"SELECT COUNT(*) FROM contacts c INNER JOIN locations l WHERE l.LocationID = c.LocationID AND l.Address = '{location.Address}' AND l.CityName = '{location.CityName}';";
             long locHasConCount = sql.ExecuteScalar(CommandText);
 
-            if (locHasConCount == 0)
+            if (locHasConCount == 0) //TODOH: warum kann man keine location ändern die einem contact zugewiesen ist
             {
                 if (c == "1")
                 {
-                    CommandText = $"SELECT Address FROM locations WHERE LocationID = {inputindex};";
-                    beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
-
-                    newValueIsCorrectInput = InputChecker.NoEmptyInputCheck(newValue);
                     CommandText = $"UPDATE locations SET Address = '{newValue}' WHERE LocationID = {inputindex};";
+                    sql.ExecuteNonQuery(CommandText);
                 }
                 else if (c == "2")
                 {
-                    CommandText = $"SELECT CityName FROM locations WHERE LocationID = {inputindex};";
-                    beforeEditValue = sql.GetBeforeEditValueString(inputindex, CommandText);
-
-                    newValueIsCorrectInput = InputChecker.NoEmptyInputCheck(newValue);
                     CommandText = $"UPDATE locations SET CityName = '{newValue}' WHERE LocationID = {inputindex};";
+                    sql.ExecuteNonQuery(CommandText);
                 }
 
                 sql.ExecuteNonQuery(CommandText);

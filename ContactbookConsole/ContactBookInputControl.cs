@@ -178,8 +178,8 @@ namespace ContactbookConsole
                     {
                         newvalue = Console.ReadLine();
                         CorrectInput = InputChecker.NoEmptyInputCheck(newvalue);
-                        if (CorrectInput)
-                            break; //TODO: check ob das nötig ist oder ob es ohne break auch geht
+                        //if (CorrectInput)
+                        //    break; //TODO: check ob das nötig ist oder ob es ohne break auch geht
                     }
                     contactbooklogic.EditLocation(inputindex, c, sql, newvalue);
                 }
