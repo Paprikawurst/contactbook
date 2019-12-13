@@ -94,7 +94,7 @@ namespace ContactbookLogicLibrary
                     long hasContactC = ExecuteScalar(CommandText);
 
 
-                    if (hasContactC == 0) //TODO: repair output
+                    if (hasContactC == 0)
                     {
                         Location location = new Location
                         {
@@ -133,13 +133,13 @@ namespace ContactbookLogicLibrary
             {
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODOH: repair output
+                while (reader.Read())
                 {
                     cityList.Add(reader.GetString(0));
                 }
             }
             return cityList;
-        }//TODOH: output sichtbar machen wo die methode aufgerufen wird
+        }
 
         public List<string> ShowCitiesOfLocations() // output all cities of locations
         {
@@ -153,7 +153,7 @@ namespace ContactbookLogicLibrary
 
                 connection.Open();
                 SQLiteDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) //TODOH: output sichtbar machen wo die methode aufgerufen wird
+                while (reader.Read())
                 {
                     citiesOfLocations.Add(reader.GetString(0));
                 }
@@ -193,7 +193,7 @@ namespace ContactbookLogicLibrary
                     CommandText = $"SELECT COUNT(*) FROM locations l INNER JOIN contacts c ON l.LocationID = c.LocationID WHERE l.LocationID = {reader.GetInt32(0)}";
                     long hasContactC = ExecuteScalar(CommandText);
 
-                    if (hasContactC == 0) //TODOH: separate console from logic - how does this work [count(*) checken]
+                    if (hasContactC == 0) //TODOH: separate console from logic - how does this work [count(*) beachten und checken]
                     {
                         Console.WriteLine($"{reader.GetInt32(0)}. {reader.GetString(1)} {reader.GetString(2)}");
                     }

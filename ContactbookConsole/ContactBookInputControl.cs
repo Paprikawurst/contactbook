@@ -1,6 +1,7 @@
 ﻿using ContactbookLogicLibrary;
 using ContactData;
 using System;
+using System.Collections.Generic;
 
 namespace ContactbookConsole
 {
@@ -146,17 +147,24 @@ namespace ContactbookConsole
         public static void EditLocationCommand(ContactBookLogic contactbooklogic, SQLConnection sql, long countLocations)
         {
             Console.WriteLine($"Please enter the index of the location you wish to edit.");
-            sql.ReadLocationsTable();
+            List<Location> locationsList = sql.ReadLocationsTable();
+
+            foreach(var loc in locationsList)
+            {
+                Console.WriteLine($"{loc.LocationID} {loc.Address} {loc.CityName}, has contact: {loc.HasContact} ");
+            }
 
             bool z = int.TryParse(Console.ReadLine(), out int inputindex);
 
             if (z && inputindex <= countLocations && inputindex > 0)
             {
-
                 Console.WriteLine("Please enter the number of what you want to edit.\n1. Address\n2. City\n");
                 var c = Console.ReadLine();
                 if (c == "1" || c == "2")
                 {
+                    bool CorrectInput = false;
+                    var newvalue = "";
+
                     if (c == "1")
                     {
                         Console.WriteLine($"Please enter the new value for the address.");
@@ -165,7 +173,14 @@ namespace ContactbookConsole
                     {
                         Console.WriteLine($"Please enter the new value for the cityname.");
                     }
-                    var newvalue = Console.ReadLine(); //TODO: check ob richtiger input statt console.readline
+
+                    while (!CorrectInput)
+                    {
+                        newvalue = Console.ReadLine();
+                        CorrectInput = InputChecker.NoEmptyInputCheck(newvalue);
+                        if (CorrectInput)
+                            break; //TODO: check ob das nötig ist oder ob es ohne break auch geht
+                    }
                     contactbooklogic.EditLocation(inputindex, c, sql, newvalue);
                 }
 

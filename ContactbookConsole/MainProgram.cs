@@ -1,5 +1,7 @@
 ﻿using ContactbookLogicLibrary;
+using ContactData;
 using System;
+using System.Collections.Generic;
 
 namespace ContactbookConsole
 {
@@ -115,7 +117,12 @@ namespace ContactbookConsole
                             if (countLocations > 0)
                             {
                                 Console.WriteLine("\nPlease enter the index of the location you want to remove.\n");
-                                sql.ReadLocationsTable();
+                                List<Location> locationsList = sql.ReadLocationsTable();
+                                foreach (var loc in locationsList)
+                                {
+                                    Console.WriteLine($"{loc.LocationID} {loc.Address} {loc.CityName}, has contact: {loc.HasContact} ");
+                                }
+
                                 Console.WriteLine("");
                                 bool numberCheck = int.TryParse(Console.ReadLine(), out var value);
                                 if (numberCheck)

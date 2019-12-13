@@ -7,7 +7,7 @@ namespace ContactbookConsole
 {
     public class ShowConsoleOutput
     {
-        //TODOH: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist - überall
+        //TODOH: hier liste bekommen und ausgabe hier - damit es von SQL connection getrennt ist - überall (vlt mit List<object>?)
         public void ListWanted(ContactBookLogic contactbooklogic, SQLConnection sql, long countContacts, long countLocations)
         {
             Console.WriteLine("\nDo you want a list of 1. only contacts, 2. only locations or 3. both?\nType 1, 2 or 3\n");
@@ -60,6 +60,9 @@ namespace ContactbookConsole
                 Console.WriteLine("");
                 Console.WriteLine("\nWhich city do you want to display the contacts from?\nPossible cities are:\n");
                 tempList = sql.ShowCitiesOfContacts();
+                foreach (string s in tempList)
+                    Console.WriteLine(s);
+
                 Console.WriteLine("");
                 var chosenCity = Console.ReadLine();
                 var CommandText = $"SELECT * FROM locations l INNER JOIN contacts c ON c.LocationID = l.LocationID WHERE l.CityName = '{chosenCity}';";
@@ -80,6 +83,9 @@ namespace ContactbookConsole
             {
                 Console.WriteLine("\nCities with contacts:\n");
                 tempList = sql.ShowCitiesOfContacts();
+
+                foreach (string s in tempList)
+                    Console.WriteLine(s);
             }
             else if (check == "4")
             {
@@ -106,13 +112,22 @@ namespace ContactbookConsole
             if (check == "1")
             {
                 Console.WriteLine("\nListing all locations:\n");
-                sql.ReadLocationsTable();
+                List<Location> locationsList = sql.ReadLocationsTable();
+
+                foreach (var loc in locationsList)
+                {
+                    Console.WriteLine($"{loc.LocationID} {loc.Address} {loc.CityName}, has contact: {loc.HasContact} ");
+                }
+
+
                 Console.WriteLine("");
             }
             else if (check == "2")
             {
                 Console.WriteLine("\nWhich city do you want to display the locations from?\nPossible cities are:\n");
-                sql.ShowCitiesOfLocations();
+                List<string> tempLocationCityList = sql.ShowCitiesOfLocations();
+                foreach (string s in tempLocationCityList)
+                    Console.WriteLine(s);
                 Console.WriteLine("");
                 var chosenCity = Console.ReadLine();
 
@@ -133,7 +148,9 @@ namespace ContactbookConsole
             else if (check == "3")
             {
                 Console.WriteLine("\nCities with locations:\n");
-                sql.ShowCitiesOfLocations();
+                List<string> tempLocationCityList = sql.ShowCitiesOfLocations();
+                foreach (string s in tempLocationCityList)
+                    Console.WriteLine(s);
             }
             else
                 Console.WriteLine("Invalid Input!");
@@ -153,8 +170,20 @@ namespace ContactbookConsole
                 sql.ReadContactsTable();
                 Console.WriteLine("");
 
-                Console.WriteLine("\nLocations:");   
-                sql.ReadLocationsTable();
+                Console.WriteLine("\nLocations:");
+                List<Location> locationsList = sql.ReadLocationsTable();
+
+                foreach (var loc in locationsList)
+                {
+                    if (loc.HasContact == true)
+                    {
+                        Console.WriteLine($"{loc.LocationID} {loc.Address} {loc.CityName} assigned to a contact ");
+                    }
+                    else if (loc.HasContact == false)
+                    {
+                        Console.WriteLine($"{loc.LocationID} {loc.Address} {loc.CityName}");
+                    }
+                }
                 Console.WriteLine("");
 
 
@@ -162,7 +191,9 @@ namespace ContactbookConsole
             else if (check == "2")
             {
                 Console.WriteLine("\nWhich city do you want to display the contacts and locations from?\nPossible cities are:\n");
-                sql.ShowCitiesOfLocations();
+                List<string> tempLocationCityList = sql.ShowCitiesOfLocations();
+                foreach (string s in tempLocationCityList)
+                    Console.WriteLine(s);
                 Console.WriteLine("");
 
                 var chosenCity = Console.ReadLine();
@@ -188,10 +219,15 @@ namespace ContactbookConsole
             else if (check == "3")
             {
                 Console.WriteLine("\nCities with contacts:\n");
-                sql.ShowCitiesOfContacts();
+                List<string> tempContactCityList = sql.ShowCitiesOfContacts();
+                foreach (string s in tempContactCityList)
+                    Console.WriteLine(s);
 
                 Console.WriteLine("\nCities with locations:\n");
-                sql.ShowCitiesOfLocations();
+                List<string> tempLocationCityList = sql.ShowCitiesOfLocations();
+                foreach (string s in tempLocationCityList)
+                    Console.WriteLine(s);
+                Console.WriteLine("");
             }
             else
                 Console.WriteLine("Invalid Input.");
